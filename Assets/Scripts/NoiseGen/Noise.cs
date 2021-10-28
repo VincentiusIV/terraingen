@@ -6,7 +6,7 @@ public static class Noise {
     public static float [,] GenerateNoiseMap(int width, int height, float scale, int octaves, float persistence, float lacunarity, float falloff)
     {
         float[,] noiseMap = new float[width, height];
-
+        float cuttOff = falloff*2;
         if (scale <= 0) scale = 0.0001f;
 
         float maxNoiseHeight = float.MinValue;
@@ -47,10 +47,14 @@ public static class Noise {
                 distToCenter = NormalizeDist(distToCenter, width, height);
                 //Debug.Log(string.Format("Dist To Center {0}", distToCenter));
 
-                if (distToCenter > falloff)
+                if (distToCenter < cuttOff)
                 {
-                    noiseMap[x, y] = noiseHeight + (2 * minNoiseHeight);
+                    noiseMap[x, y] = noiseHeight * (1 + distToCenter);
                   //if (noiseMap[x, y] > maxNoiseHeight) maxNoiseHeight = noiseMap[x, y];
+                }
+                else if (distToCenter > falloff && distToCenter > cuttOff)
+                {
+                    noiseMap[x, y] = noiseHeight * Mathf.Pow((1+distToCenter),2);
                 }
                 else
                 {
@@ -62,10 +66,11 @@ public static class Noise {
         {
             for (int x = 0; x < width; x++)
             {
+                if (noiseMap[x, y] == 999) noiseMap[x, y] = minNoiseHeight;
                 noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
             }
         }
-        //Debug.Log(string.Format("{0} --- {1}", minNoiseHeight, maxNoiseHeight));
+        Debug.Log(string.Format("{0} --- {1}", minNoiseHeight, maxNoiseHeight));
         return noiseMap;
     }
         

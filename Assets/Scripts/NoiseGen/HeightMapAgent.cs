@@ -8,6 +8,8 @@ using UnityEngine;
 public class HeightMapAgent : TerrainAgent
 {
     public MapGenerator mapGenerator;
+    public int maxHeight = 10;
+    public int minHeight = 0;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
@@ -16,7 +18,9 @@ public class HeightMapAgent : TerrainAgent
         {
             for (int z = 0; z < grid.Depth; z++)
             {
-                float height = noiseMap[x, z] * grid.Height;
+                float avgHeight = GetAverage(x, z, noiseMap, grid.Width, grid.Depth);
+                float height = Mathf.Lerp(minHeight, maxHeight, avgHeight);
+                //float height = avgHeight;
                 for (int y = 0; y < grid.Height; y++)
                 {
                     if(y < height)
@@ -32,5 +36,27 @@ public class HeightMapAgent : TerrainAgent
     {
         if (mapGenerator == null)
             mapGenerator = GetComponentInChildren<MapGenerator>();
+    }
+
+    private float GetAverage(int x, int z, float[,] noisemap, int width, int depth)
+    {
+        if(x > 0 && x < width && z > 0 && z < depth)
+        {
+            try
+            {
+                float total = 0f;
+                total += noisemap[x, z] + noisemap[x - 1, z] + noisemap[x + 1, z] + noisemap[x, z - 1] + noisemap[x, z + 1] + noisemap[x - 1, z + 1] + noisemap[x - 1, z - 1] + noisemap[x + 1, z + 1] + noisemap[x + 1, z - 1];
+                total = total / 9;
+                return total;
+            }catch(System.IndexOutOfRangeException e)
+            {
+                return noisemap[x, z];
+            }
+            
+        }
+        else
+        {
+            return noisemap[x, z];
+        }
     }
 }
