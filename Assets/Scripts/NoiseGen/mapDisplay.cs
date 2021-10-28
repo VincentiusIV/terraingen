@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class mapDisplay : MonoBehaviour
+public class MapDisplay : MonoBehaviour
 {
     public Renderer textureRenderer;
     public void drawNoiseMap(float[,] noiseMap)
@@ -22,7 +22,7 @@ public class mapDisplay : MonoBehaviour
         texture.SetPixels(colorMap);
         texture.Apply();
         textureRenderer.sharedMaterial.mainTexture = texture;
-        textureRenderer.transform.localScale = new Vector3(width, 1, height);
+        textureRenderer.transform.localScale = new Vector3(width / 10, 1, height / 10); ;
     }
 
 }

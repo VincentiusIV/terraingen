@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor (typeof(mapGenerator))]
+[CustomEditor (typeof(MapGenerator))]
 public class MapGeneratorEditor : Editor
 {
     // Start is called before the first frame update
     public override void OnInspectorGUI()
     {
-        mapGenerator mapGen = (mapGenerator)target;
+        MapGenerator mapGen = (MapGenerator)target;
         if (DrawDefaultInspector())
         {
             if (mapGen.autoUpdate)
             {
-                mapGen.generateMap();   
+                mapGen.Generate();   
             }
         }
         if (GUILayout.Button("Generate"))
         {
-            mapGen.generateMap();
+            mapGen.Generate();
         }
     }
 }

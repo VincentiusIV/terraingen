@@ -19,16 +19,27 @@ public class VoxelGrid
     public int Depth => cells.GetLength(1);
     public int Height => cells.GetLength(2);
 
-    int[,,] cells = new int[,,] { { 
-          { 1, 0, 0}, { 1, 1 ,0}, { 1, 0, 0 } }, 
-        { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 0, 0 } }, 
-        { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 0, 0} } };
+    public Vector3 Position { get; }
+    private int[,,] cells;
+
+    public VoxelGrid(int size, int height, Vector3 position)
+    {
+        this.Position = position;
+        cells = new int[size, size, height];
+    }
 
     public int GetCell(int x, int y, int z)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
             return 0;
         return cells[x, z, y];
+    }
+
+    public void SetCell(int x, int y, int z, int type)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
+            return;
+        cells[x, z, y] = type;
     }
 
     public int GetCell(Vector3 position)

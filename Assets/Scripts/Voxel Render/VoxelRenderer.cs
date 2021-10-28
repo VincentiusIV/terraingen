@@ -7,6 +7,7 @@ using UnityEngine;
 public class VoxelRenderer : MonoBehaviour
 {
     public float scale = 1f;
+    public bool drawGizmos = false;
 
     private MeshFilter meshFilter;
     private Mesh mesh
@@ -21,9 +22,11 @@ public class VoxelRenderer : MonoBehaviour
         }
     }
 
+
     private List<Vector3> vertices;
     private List<int> triangles;
     private float adjScale;
+    private VoxelGrid grid;
 
     private readonly static Vector3[] cubeVertices =
     {
@@ -47,22 +50,18 @@ public class VoxelRenderer : MonoBehaviour
         { 3, 2, 7, 6},
     };
 
-    private void Awake()
-    {
-        
-    }
-
-    private void Start()
-    {
-        GenerateDefault();
-    }
-
     [ContextMenu("GenerateDefault")]
     private void GenerateDefault()
     {
+        GenerateAndUpdate(new VoxelGrid(10, 10, transform.position));
+    }
+
+    public void GenerateAndUpdate(VoxelGrid voxelGrid)
+    {
+        this.grid = voxelGrid;
         meshFilter = GetComponent<MeshFilter>();
         adjScale = scale * 0.5f;
-        CreateVoxelMesh(new VoxelGrid());
+        CreateVoxelMesh(voxelGrid);
         UpdateMesh();
     }
 
@@ -120,5 +119,22 @@ public class VoxelRenderer : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (grid == null || !drawGizmos)
+            return;
+        for (int x = 0; x < grid.Width; x++)
+        {
+            for (int y = 0; y < grid.Height; y++)
+            {
+                for (int z = 0; z < grid.Depth; z++)
+                {
+                    if (grid.GetCell(x, y, z) != 0)
+                        Gizmos.DrawCube(new Vector3(x, y, z), Vector3.one * scale);
+                }
+            }
+        }
     }
 }
