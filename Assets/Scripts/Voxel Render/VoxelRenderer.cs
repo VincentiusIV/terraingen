@@ -9,7 +9,18 @@ public class VoxelRenderer : MonoBehaviour
     public float scale = 1f;
 
     private MeshFilter meshFilter;
-    private Mesh mesh => Application.isPlaying ? meshFilter.mesh : meshFilter.sharedMesh;
+    private Mesh mesh
+    {
+        get => Application.isPlaying ? meshFilter.mesh : meshFilter.sharedMesh;
+        set
+        {
+            if (Application.isPlaying)
+                meshFilter.mesh = value;
+            else
+                meshFilter.sharedMesh = value;
+        }
+    }
+
     private List<Vector3> vertices;
     private List<int> triangles;
     private float adjScale;
@@ -105,7 +116,7 @@ public class VoxelRenderer : MonoBehaviour
 
     private void UpdateMesh()
     {
-        mesh.Clear();
+        mesh = new Mesh();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
