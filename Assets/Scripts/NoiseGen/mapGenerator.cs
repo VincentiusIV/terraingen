@@ -10,12 +10,13 @@ public class mapGenerator : MonoBehaviour
     public int octaves;
     public float persistance;
     public float lacunarity;
+    public float falloff;
 
     public bool autoUpdate;
 
     public void generateMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistance, lacunarity);
+        float[,] noiseMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistance, lacunarity, falloff);
         mapDisplay display = FindObjectOfType<mapDisplay>();
         display.drawNoiseMap(noiseMap);
     }
