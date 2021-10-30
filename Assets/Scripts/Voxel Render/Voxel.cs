@@ -52,7 +52,7 @@ public class VoxelGrid
     
     public int GetNeighbor(Vector3 position, Direction dir)
     {
-        return GetNeighbor(Vector3Int.CeilToInt(position), dir);
+        return GetNeighbor(Vector3Int.FloorToInt(position), dir);
     }
     
     public int GetNeighbor(Vector3Int position, Direction dir)
