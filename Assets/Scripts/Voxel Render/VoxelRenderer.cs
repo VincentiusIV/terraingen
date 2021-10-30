@@ -22,7 +22,8 @@ public class VoxelRenderer : MonoBehaviour
         }
     }
 
-
+    public int chunkSize = 10;
+    private int x, y, z;
     private List<Vector3> vertices;
     private List<int> triangles;
     private float adjScale;
@@ -53,12 +54,15 @@ public class VoxelRenderer : MonoBehaviour
     [ContextMenu("GenerateDefault")]
     private void GenerateDefault()
     {
-        GenerateAndUpdate(new VoxelGrid(10, 10, transform.position));
+        GenerateAndUpdate(new VoxelGrid(10, 10), 0, 0, 0);
     }
 
-    public void GenerateAndUpdate(VoxelGrid voxelGrid)
+    public void GenerateAndUpdate(VoxelGrid voxelGrid, int x, int y, int z)
     {
         this.grid = voxelGrid;
+        this.x = x;
+        this.y = y;
+        this.z = z;
         meshFilter = GetComponent<MeshFilter>();
         adjScale = scale * 0.5f;
         CreateVoxelMesh(voxelGrid);
@@ -69,15 +73,19 @@ public class VoxelRenderer : MonoBehaviour
     {
         vertices = new List<Vector3>();
         triangles = new List<int>();
-        for (int x = 0; x < voxelGrid.Width; x++)
+        for (int x = 0; x < chunkSize; x++)
         {
-            for (int y = 0; y < voxelGrid.Height; y++)
+            for (int y = 0; y < chunkSize; y++)
             {
-                for (int z = 0; z < voxelGrid.Depth; z++)
+                for (int z = 0; z < chunkSize; z++)
                 {
-                    if (voxelGrid.GetCell(x, y, z) != 0)
+                    int xOffset = x + this.x;
+                    int yOffset = y + this.y;
+                    int zOffset = z + this.z;
+
+                    if (voxelGrid.GetCell(xOffset, yOffset, zOffset) != 0)
                     {
-                        CreateCube(adjScale, new Vector3(x * scale + adjScale, y * scale + adjScale, z * scale + adjScale), voxelGrid);
+                        CreateCube(adjScale, new Vector3(xOffset * scale + adjScale, yOffset * scale + adjScale, zOffset * scale + adjScale), voxelGrid);
                     }
                 }
             }

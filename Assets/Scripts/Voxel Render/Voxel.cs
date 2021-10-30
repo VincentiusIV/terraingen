@@ -18,13 +18,11 @@ public class VoxelGrid
     public int Width => cells.GetLength(0);
     public int Depth => cells.GetLength(1);
     public int Height => cells.GetLength(2);
-
-    public Vector3 Position { get; }
+    
     private int[,,] cells;
 
-    public VoxelGrid(int size, int height, Vector3 position)
+    public VoxelGrid(int size, int height)
     {
-        this.Position = position;
         cells = new int[size, size, height];
     }
 

@@ -13,6 +13,8 @@ public class HeightMapAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        mapGenerator.width = grid.Width;
+        mapGenerator.height = grid.Depth;
         float[,] noiseMap = mapGenerator.Generate();
         for (int x = 0; x < grid.Width; x++)
         {
@@ -20,7 +22,6 @@ public class HeightMapAgent : TerrainAgent
             {
                 float avgHeight = GetAverage(x, z, noiseMap, grid.Width, grid.Depth);
                 float height = Mathf.Lerp(minHeight, maxHeight, avgHeight);
-                //float height = avgHeight;
                 for (int y = 0; y < grid.Height; y++)
                 {
                     if(y < height)
@@ -40,7 +41,7 @@ public class HeightMapAgent : TerrainAgent
 
     private float GetAverage(int x, int z, float[,] noisemap, int width, int depth)
     {
-        if(x > 0 && x < width && z > 0 && z < depth)
+        if(x >= 0 && x < width && z >= 0 && z < depth)
         {
             try
             {
