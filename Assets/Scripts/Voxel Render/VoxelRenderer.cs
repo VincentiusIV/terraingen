@@ -3,10 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ErosionType
+{
+    Stratified = 0,
+    Eroded = 1
+}
+
 [Serializable]
 public class VoxelMaterial
 {
     public string name;
+    public ErosionType erosionType;
+    public float thickness;
+    [Header("Stratified Material Properties")]
+    public float depth, roughness;
+    [Header("Eroded Material Properties")]
+    public float weight, angleOfRepose, maximumSlope;
     public int[] indices = new int[6];
 
     public Vector2[] GetUVs(Texture texture, int horizontalCells, int verticalCells, int cellWidth, int cellHeight, Direction direction)
@@ -27,7 +39,7 @@ public class VoxelMaterial
 }
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class VoxelRenderer : MonoBehaviour
+public class VoxelRenderer : TerrainAgent
 {
     public float scale = 1f;
     public bool drawGizmos = false;
@@ -47,9 +59,12 @@ public class VoxelRenderer : MonoBehaviour
     }
 
     public int chunkSize = 10;
-    public int textureRows = 16, textureColumns = 16;
-    public Texture textureSheet;
-    public VoxelMaterial[] materials;
+    public TerrainData terrainData;
+
+    public int textureRows => terrainData.textureRows;
+    public int textureColumns => terrainData.textureColumns;
+    public Texture textureSheet => terrainData.textureSheet;
+    public VoxelMaterial[] materials => terrainData.materials;
     private int cellWidth => textureSheet.width / textureColumns;
     private int cellHeight => textureSheet.height / textureRows;
 
@@ -82,10 +97,10 @@ public class VoxelRenderer : MonoBehaviour
         { 3, 2, 7, 6},
     };
 
-    [ContextMenu("GenerateDefault")]
-    private void GenerateDefault()
+
+    public override void UpdateGrid(VoxelGrid grid)
     {
-        GenerateAndUpdate(new VoxelGrid(10, 10), 0, 0, 0);
+        throw new NotImplementedException();
     }
 
     public void GenerateAndUpdate(VoxelGrid voxelGrid, int x, int y, int z)
