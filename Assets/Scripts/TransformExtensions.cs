@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-// Author: Vincent Versnel
-
 public static class TransformExtensions
 {
     /// <summary>
@@ -19,11 +17,7 @@ public static class TransformExtensions
             highest = highest.parent;
         return highest;
     }
-
-    /// <summary>
-    /// Destroys all the children attached to this transform.
-    /// </summary>
-    /// <param name="transform"></param>
+    
     public static void DestroyChildren(this Transform transform)
     {
         Transform[] children = new Transform[transform.childCount];
