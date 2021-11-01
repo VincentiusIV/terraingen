@@ -20,10 +20,12 @@ public class VoxelGrid
     public int Height => cells.GetLength(2);
     
     private int[,,] cells;
+    private int[,,] depths;
 
     public VoxelGrid(int size, int height)
     {
         cells = new int[size, size, height];
+        depths = new int[size, size, height];
     }
 
     public int GetCell(int x, int y, int z)
@@ -38,6 +40,41 @@ public class VoxelGrid
         if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
             return;
         cells[x, z, y] = type;
+    }
+
+    public int GetDepth(int x, int y, int z)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
+            return 0;
+        return depths[x, z, y];
+    }
+
+    public void SetDepth(int x, int y, int z, int depth)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
+            return;
+        depths[x, z, y] = depth;
+    }
+
+    public void UpdateDepths()
+    {
+        Debug.Log("Voxel Grid: Updating Depths...");
+        for (int x = 0; x < Width; x++)
+        {
+            for (int z = 0; z < Depth; z++)
+            {
+                int depth = 0;
+                for (int y = Height; y >= 0; y--)
+                {
+                    if (GetCell(x, y, z) == 0)
+                        depth = 0;
+                    else
+                        ++depth;
+                    SetDepth(x, y, z, depth);
+                }
+            }
+        }
+        Debug.Log("Voxel Grid: Depths update complete.");
     }
 
     public int GetCell(Vector3 position)

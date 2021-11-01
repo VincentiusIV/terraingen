@@ -16,9 +16,12 @@ public class VoxelMaterial
     public ErosionType erosionType;
     public float thickness;
     [Header("Stratified Material Properties")]
-    public float depth, roughness;
+    public float depth;
+    public float roughness;
     [Header("Eroded Material Properties")]
-    public float weight, angleOfRepose, maximumSlope;
+    public float weight;
+    public float angleOfRepose;
+    public float maximumSlope;
     public int[] indices = new int[6];
 
     public Vector2[] GetUVs(Texture texture, int horizontalCells, int verticalCells, int cellWidth, int cellHeight, Direction direction)
@@ -39,7 +42,7 @@ public class VoxelMaterial
 }
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class VoxelRenderer : TerrainAgent
+public class VoxelRenderer : MonoBehaviour
 {
     public float scale = 1f;
     public bool drawGizmos = false;
@@ -96,12 +99,6 @@ public class VoxelRenderer : TerrainAgent
         { 5, 4, 1, 0},
         { 3, 2, 7, 6},
     };
-
-
-    public override void UpdateGrid(VoxelGrid grid)
-    {
-        throw new NotImplementedException();
-    }
 
     public void GenerateAndUpdate(VoxelGrid voxelGrid, int x, int y, int z)
     {

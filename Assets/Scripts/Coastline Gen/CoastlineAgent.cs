@@ -6,6 +6,7 @@ public class CoastlineAgent : TerrainAgent
 {
     public override void UpdateGrid(VoxelGrid grid)
     {
+        Debug.Log("CoastlineAgent working...");
 
     }
 }

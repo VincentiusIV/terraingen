@@ -18,9 +18,11 @@ public class TerrainPipeline : MonoBehaviour
     [ContextMenu("Run")]
     public void GenerateTerrain()
     {
+        Debug.Log("Running the terrain pipeline...");
         Grid = new VoxelGrid(size, maxHeight);
         foreach (var agent in agents)
         {
+            Debug.LogFormat("Agent active: {0}", agent.GetType().ToString());
             agent.UpdateGrid(Grid);
         }
     }

@@ -13,6 +13,13 @@ public class HeightMapAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        Debug.Log("HeightMapAgent working...");
+        InitializeGridFromNoiseMap(grid);
+        SetMaterialsByDepth(grid);
+    }
+
+    private void InitializeGridFromNoiseMap(VoxelGrid grid)
+    {
         mapGenerator.width = grid.Width;
         mapGenerator.height = grid.Depth;
         float[,] noiseMap = mapGenerator.Generate();
@@ -24,10 +31,32 @@ public class HeightMapAgent : TerrainAgent
                 float height = Mathf.Lerp(minHeight, maxHeight, avgHeight);
                 for (int y = 0; y < grid.Height; y++)
                 {
-                    if(y < height)
+                    if (y < height)
                     {
-                        grid.SetCell(x, y, z, Random.Range(1, 4));
+                        grid.SetCell(x, y, z, 1);
                     }
+                }
+            }
+        }
+        grid.UpdateDepths();
+    }
+
+    private static void SetMaterialsByDepth(VoxelGrid grid)
+    {
+        for (int x = 0; x < grid.Width; x++)
+        {
+            for (int z = 0; z < grid.Depth; z++)
+            {
+                for (int y = grid.Height; y >= 0; y--)
+                {
+                    int depth = grid.GetDepth(x, y, z);
+
+                    if (depth == 1)
+                        grid.SetCell(x, y, z, 1);
+                    else if (depth > 1 && depth <= 4)
+                        grid.SetCell(x, y, z, 2);
+                    else if (depth > 4)
+                        grid.SetCell(x, y, z, 3);
                 }
             }
         }
