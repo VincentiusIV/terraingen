@@ -19,7 +19,7 @@ public class CoastlineAgent : TerrainAgent
         for (int token = 0; token < tokens; token++)
         {
             Debug.LogFormat("Used {0} out of {1} tokens", token, tokens);
-            Vector3Int position = new Vector3Int((int)Random.Range(0, grid.Width), 2, (int)Random.Range(0, grid.Depth));
+            Vector3Int position = new Vector3Int((int)Random.Range(0, grid.Width/5)*5, 2, (int)Random.Range(0, grid.Depth/5)*5);
             DrawBeaches(position, grid, searchDepth);
         }
     }
@@ -33,26 +33,7 @@ public class CoastlineAgent : TerrainAgent
         if (emptyCells.Count != 0 && depth > 0)
         {
             //Found beachfront
-            foreach (var item in surfaceCells)
-            {
-                if (grid.GetHeight(item.x, item.y, item.z) < 6 && (grid.GetMaxSlope(item.x, item.y, item.z, sxSearch) < maxSlope))
-                {
-                    for (int i = item.y; i >= 0; i--)
-                    {
-                        for (int j = -1; j < 2; j++)
-                        {
-                            for (int k = -1; k < 2; k++)
-                            {
-                                if (grid.GetCell(item.x + j, i, item.z + k) != 0)
-                                    grid.SetCell(item.x + j, i, item.z, 1);
-                            }
-                        }
-                    }
-
-                }
-            }
-            depth -= 1;
-            DrawBeaches(RandomNeighbour(position), grid, depth);
+            FinishBeach(position, grid, new Stack<Vector3Int>(), depth * 2);
         }
         
         else if (depth > 0)
@@ -60,6 +41,69 @@ public class CoastlineAgent : TerrainAgent
             depth = depth - 1;
             DrawBeaches(RandomNeighbour(position), grid, depth);
         }
+    }
+
+    private void FinishBeach(Vector3Int position, VoxelGrid grid, Stack<Vector3Int> stack, int depth)
+    {
+        List<Vector3Int> emptyCells = GetNearbyEmpty(position, grid);
+        List<Vector3Int> surfaceCells = GetNearbySurface(position, grid);
+        if (emptyCells.Count != 0 && depth > 0)
+        {
+            foreach (var item in surfaceCells)
+            {
+                stack.Push(item);
+            }
+            depth = depth - 1;
+            FinishBeach(RandomNeighbour(position), grid, stack, depth);
+        }
+        else
+        {
+            while(stack.Count != 0)
+            {
+                Vector3Int voxel = stack.Pop();
+                if (grid.GetHeight(voxel.x, voxel.y, voxel.z) < 6 && (grid.GetMaxSlope(voxel.x, voxel.y, voxel.z, sxSearch) < maxSlope))
+                {
+                    for (int i = voxel.y; i >= 0; i--)
+                    {
+                        for (int j = -1; j < 2; j++)
+                        {
+                            for (int k = -1; k < 2; k++)
+                            {
+                                if (grid.GetCell(voxel.x + j, i, voxel.z + k) != 0)
+                                    grid.SetCell(voxel.x + j, i, voxel.z, 1);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private Vector3Int getNeigbour(Vector3Int position, int selector)
+    {
+        switch (selector)
+        {
+            case 0:
+                position.x += sxSearch;
+                Debug.Log("Went Left");
+                break;
+            case 1:
+                position.x -= sxSearch;
+                Debug.Log("Went Right");
+                break;
+            case 2:
+                position.z += szSearch;
+                Debug.Log("Went Inward");
+                break;
+            case 3:
+                position.z -= szSearch;
+                Debug.Log("Went Outward");
+                break;
+            default:
+                break;
+        }
+        return position;
     }
 
     private Vector3Int RandomNeighbour(Vector3Int position)
