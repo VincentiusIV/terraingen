@@ -127,6 +127,7 @@ public class VoxelGrid
         }
         return maxSlope;
     }
+
     public float GetMaxSlope(int x, int y, int z, int range)
     {
         float maxSlope = float.MinValue;

@@ -24,13 +24,51 @@ public class ErosionAgent : TerrainAgent
         voxelMaterials.AddRange(terrainData.materials);
         voxelMaterials.OrderByDescending(m => m.depth);
         voxelMaterials.RemoveAll(m => m.materialType == MaterialType.Ignored);
-        List<float[,]> noiseMaps = new List<float[,]>();
+        InitializeLayers(grid, voxelMaterials);
+
+        List<(int, int)>[,] layerRepresentation = new List<(int, int)>[grid.Width, grid.Depth];
+        for (int x = 0; x < grid.Width; x++)
+        {
+            for (int z = 0; z < grid.Depth; z++)
+            {
+                int currentCell = grid.GetCell(x, 0, z);
+                int counter = 0;
+                if (layerRepresentation[x, z] == null)
+                    layerRepresentation[x, z] = new List<(int, int)>();
+                for (int y = 0; y < grid.Height; y++)
+                {
+                    int cell = grid.GetCell(x, y, z);
+                    if (cell == 0)
+                    {
+                        layerRepresentation[x, z].Add((currentCell, counter));
+                        break;
+                    }
+                    else if (cell == currentCell)
+                        ++counter;
+                    else if(currentCell != cell)
+                    {
+                        layerRepresentation[x, z].Add((currentCell, counter));
+                        currentCell = cell;
+                        counter = 1;
+                    }
+                }
+            }
+        }
+
+        Debug.Log("Layer rep for (19, 0)=");
+        List<(int, int)> layerReps = layerRepresentation[0, 10];
+        for (int i = 0; i < layerReps.Count; i++)
+        {
+            Debug.LogFormat("{0}: {1}x{2}", i, layerReps[i].Item2, terrainData.GetMaterial(layerReps[i].Item1).name);
+        }
+    }
+
+    private void InitializeLayers(VoxelGrid grid, List<VoxelMaterial> voxelMaterials)
+    {
         for (int i = 0; i < voxelMaterials.Count; i++)
         {
             VoxelMaterial material = voxelMaterials[i];
             float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, grid.Width, new Vector2(transform.position.x, transform.position.z));
-            noiseMaps.Add(noiseMap);
-
             for (int x = 0; x < grid.Width; x++)
             {
                 for (int z = 0; z < grid.Depth; z++)
@@ -42,7 +80,7 @@ public class ErosionAgent : TerrainAgent
                             continue;
                         int depth = grid.GetDepth(x, y, z);
                         float materialDepth = material.depth + noiseMap[x, z];
-                        if(depth >= materialDepth)
+                        if (depth >= materialDepth)
                         {
                             grid.SetCell(x, y, z, material.index);
                         }
