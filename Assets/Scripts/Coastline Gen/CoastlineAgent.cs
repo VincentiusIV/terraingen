@@ -4,53 +4,89 @@ using UnityEngine;
 
 public class CoastlineAgent : TerrainAgent
 {
+    public int tokens = 100;
+    public int searchDepth = 5;
+    private int currentSearchDepth;
     public int sxSearch = 5;
     public int sySearch = 5;
     public int szSearch = 5;
     public float maxSlope = 1.7f;
+    public int maxBeachHeight = 4;
     public override void UpdateGrid(VoxelGrid grid)
     {
         Debug.Log("CoastlineAgent working...");
-        for (int x = 0; x < grid.Width; x += sxSearch)
+        //token based agent picking random positions
+        for (int token = 0; token < tokens; token++)
         {
-            for (int y = 0; y < 5; y += sySearch)
+            Debug.LogFormat("Used {0} out of {1} tokens", token, tokens);
+            Vector3Int position = new Vector3Int((int)Random.Range(0, grid.Width), 2, (int)Random.Range(0, grid.Depth));
+            DrawBeaches(position, grid, searchDepth);
+        }
+    }
+
+    private void DrawBeaches(Vector3Int position, VoxelGrid grid, int depth)
+    {
+
+        List<Vector3Int> emptyCells = GetNearbyEmpty(position, grid);
+        List<Vector3Int> surfaceCells = GetNearbySurface(position, grid);
+
+        if (emptyCells.Count != 0 && depth > 0)
+        {
+            //Found beachfront
+            foreach (var item in surfaceCells)
             {
-                for (int z = 0; z < grid.Depth; z += szSearch)
+                if (grid.GetHeight(item.x, item.y, item.z) < 6 && (grid.GetMaxSlope(item.x, item.y, item.z, sxSearch) < maxSlope))
                 {
-                    List<Vector3Int> emptyCells = GetNearbyEmpty(new Vector3Int(x, y, z), grid);
-                    List<Vector3Int> surfaceCells = GetNearbySurface(new Vector3Int(x, y, z), grid);
-
-                    if (emptyCells.Count != 0)
+                    for (int i = item.y; i >= 0; i--)
                     {
-                        //Found beachfront
-                        foreach (var item in surfaceCells)
+                        for (int j = -1; j < 2; j++)
                         {
-                            if (grid.GetHeight(item.x, item.y, item.z) < 3)
+                            for (int k = -1; k < 2; k++)
                             {
-                                if (grid.GetMaxSlope(item.x, item.y, item.z, 5) < maxSlope)
-                                {
-
-                                    for (int i = item.y; i >= 0; i--)
-                                    {
-                                        for (int j = -1; j < 2; j++)
-                                        {
-                                            for (int k = -1; k < 2; k++)
-                                            {
-                                                if (grid.GetCell(item.x + j, i, item.z + k) != 0)
-                                                    grid.SetCell(item.x + j, i, item.z, 1);
-                                            }
-                                        }
-                                    }
-
-                                }
+                                if (grid.GetCell(item.x + j, i, item.z + k) != 0)
+                                    grid.SetCell(item.x + j, i, item.z, 1);
                             }
                         }
                     }
+
                 }
             }
-
+            depth -= 1;
+            DrawBeaches(RandomNeighbour(position), grid, depth);
         }
+        
+        else if (depth > 0)
+        {
+            depth = depth - 1;
+            DrawBeaches(RandomNeighbour(position), grid, depth);
+        }
+    }
 
+    private Vector3Int RandomNeighbour(Vector3Int position)
+    {
+        int selector = (int)Random.Range(0, 4);
+        switch (selector)
+        {
+            case 0:
+                position.x += sxSearch;
+                Debug.Log("Went Left");
+                break;
+            case 1:
+                position.x -= sxSearch;
+                Debug.Log("Went Right");
+                break;
+            case 2:
+                position.z += szSearch;
+                Debug.Log("Went Inward");
+                break;
+            case 3:
+                position.z -= szSearch;
+                Debug.Log("Went Outward");
+                break;
+            default:
+                break;
+        }
+        return position;
     }
 
     private List<Vector3Int> GetNearbyEmpty(Vector3Int position, VoxelGrid grid)

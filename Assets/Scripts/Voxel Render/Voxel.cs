@@ -132,9 +132,9 @@ public class VoxelGrid
         float maxSlope = float.MinValue;
         int xMax = x, yMax = y, zMax = z;
         int baseHeight = GetHeight(x, y, z);
-        for (int i = -range; i < range + 1; i++)
+        for (int i = -range; i < range + 1; i += 2)
         {
-            for (int j = -range; j < range+1; j++)
+            for (int j = -range; j < range + 1; j += 2)
             {
                 if (i == 0 && j == 0)
                     continue;
