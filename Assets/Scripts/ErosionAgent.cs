@@ -42,7 +42,7 @@ public class ErosionAgent : TerrainAgent
         {
             if (material.materialType == MaterialType.Ignored)
                 continue;
-            float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, new Vector2(transform.position.x, transform.position.z));
+            float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, grid.Width, new Vector2(transform.position.x, transform.position.z));
             
             for (int x = 0; x < grid.Width; x++)
             {
