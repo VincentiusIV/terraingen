@@ -41,7 +41,7 @@ MonoBehaviour:
     materialType: 0
     thickness: 1
     depth: 0
-    roughness: 0
+    roughness: 0.2
     weight: 0
     angleOfRepose: 0
     maximumSlope: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
     materialType: 0
     thickness: 0
     depth: 4
-    roughness: 0
+    roughness: 0.13
     weight: 0
     angleOfRepose: 0
     maximumSlope: 0
