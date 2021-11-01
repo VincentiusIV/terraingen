@@ -23,6 +23,7 @@ public class TerrainDataEditor : Editor
             {
                 terrainData.materials[i - 1].index = i;
                 EditorUtility.SetDirty(terrainData);
+                AssetDatabase.SaveAssets();
             }
         }
     }

@@ -41,7 +41,7 @@ public class ErosionAgent : TerrainAgent
                         if (cellType == 0)
                             continue;
                         int depth = grid.GetDepth(x, y, z);
-                        float materialDepth = material.depth;
+                        float materialDepth = material.depth + noiseMap[x, z];
                         if(depth >= materialDepth)
                         {
                             grid.SetCell(x, y, z, material.index);
