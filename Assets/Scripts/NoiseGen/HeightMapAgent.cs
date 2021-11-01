@@ -8,8 +8,7 @@ using UnityEngine;
 public class HeightMapAgent : TerrainAgent
 {
     public NoiseGenerator mapGenerator;
-    public int maxHeight = 10;
-    public int minHeight = 0;
+    public float amplitude = 10f;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
@@ -27,7 +26,7 @@ public class HeightMapAgent : TerrainAgent
             for (int z = 0; z < grid.Depth; z++)
             {
                 float avgHeight = GetAverage(x, z, noiseMap, grid.Width, grid.Depth);
-                float height = Mathf.Lerp(minHeight, maxHeight, avgHeight);
+                float height = Mathf.Lerp(0, amplitude, avgHeight);
                 for (int y = 0; y < grid.Height; y++)
                 {
                     if (y < height)
