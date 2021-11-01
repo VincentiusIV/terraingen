@@ -3,17 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ErosionType
+public enum MaterialType
 {
     Stratified = 0,
-    Eroded = 1
+    Eroded = 1,
+    Ignored = 2
 }
 
 [Serializable]
 public class VoxelMaterial
 {
     public string name;
-    public ErosionType erosionType;
+    public int index;
+    public MaterialType materialType;
     public float thickness;
     [Header("Stratified Material Properties")]
     public float depth;
@@ -67,7 +69,6 @@ public class VoxelRenderer : MonoBehaviour
     public int textureRows => terrainData.textureRows;
     public int textureColumns => terrainData.textureColumns;
     public Texture textureSheet => terrainData.textureSheet;
-    public VoxelMaterial[] materials => terrainData.materials;
     private int cellWidth => textureSheet.width / textureColumns;
     private int cellHeight => textureSheet.height / textureRows;
 
@@ -126,7 +127,7 @@ public class VoxelRenderer : MonoBehaviour
                     int xOffset = x + this.x;
                     int yOffset = y + this.y;
                     int zOffset = z + this.z;
-                    int type = voxelGrid.GetVoxelMaterial(xOffset, yOffset, zOffset);
+                    int type = voxelGrid.GetCell(xOffset, yOffset, zOffset);
                     if (type != 0)
                     {
                         CreateCube(adjScale, new Vector3(xOffset * scale + adjScale, yOffset * scale + adjScale, zOffset * scale + adjScale), voxelGrid, type);
@@ -156,7 +157,7 @@ public class VoxelRenderer : MonoBehaviour
         triangles.Add(vertexCount - 4 + 2);
         triangles.Add(vertexCount - 4 + 3);
 
-        VoxelMaterial mat = materials[type - 1];
+        VoxelMaterial mat = terrainData.GetMaterial(type);
         uvs.AddRange(mat.GetUVs(textureSheet, textureColumns, textureRows, cellWidth, cellHeight, dir));
     }
 
@@ -187,7 +188,7 @@ public class VoxelRenderer : MonoBehaviour
             {
                 for (int z = 0; z < grid.Depth; z++)
                 {
-                    if (grid.GetVoxelMaterial(x, y, z) != 0)
+                    if (grid.GetCell(x, y, z) != 0)
                         Gizmos.DrawCube(new Vector3(x, y, z), Vector3.one * scale);
                 }
             }

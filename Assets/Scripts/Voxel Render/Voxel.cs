@@ -32,14 +32,14 @@ public class VoxelGrid
         cells = new Voxel[size, size, height];
     }
 
-    public int GetVoxelMaterial(int x, int y, int z)
+    public int GetCell(int x, int y, int z)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
             return 0;
         return cells[x, z, y].material;
     }
 
-    public void SetVoxelMaterial(int x, int y, int z, int type)
+    public void SetCell(int x, int y, int z, int type)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
             return;
@@ -85,7 +85,7 @@ public class VoxelGrid
                 int height = 0;
                 for (int y = Height; y >= 0; y--)
                 {
-                    if (GetVoxelMaterial(x, y, z) == 0)
+                    if (GetCell(x, y, z) == 0)
                         depth = 0;
                     else
                         ++depth;
@@ -93,7 +93,7 @@ public class VoxelGrid
                 }
                 for (int y = 0; y < Height; y++)
                 {
-                    if (GetVoxelMaterial(x, y, z) == 0)
+                    if (GetCell(x, y, z) == 0)
                         height = 0;
                     else
                         ++height;
@@ -132,7 +132,7 @@ public class VoxelGrid
 
     public int GetCell(Vector3Int position)
     {
-        return GetVoxelMaterial(position.x, position.y, position.z);
+        return GetCell(position.x, position.y, position.z);
     }
     
     public int GetNeighbor(Vector3 position, Direction dir)
@@ -149,7 +149,7 @@ public class VoxelGrid
     {
         Vector3Int offset = offsets[(int)dir];
         Vector3Int neighbor = new Vector3Int(x + offset.x, y + offset.y, z + offset.z);
-        return GetVoxelMaterial(neighbor.x, neighbor.y, neighbor.z);
+        return GetCell(neighbor.x, neighbor.y, neighbor.z);
     }
 
     Vector3Int[] offsets =

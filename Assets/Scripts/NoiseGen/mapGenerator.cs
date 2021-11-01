@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    // Start is called before the first frame update
     public int width, height;
     public float noiseScale;
     public int octaves;
     public float persistance;
     public float lacunarity;
     public float falloff;
-
     public bool autoUpdate;
 
     public float[,] Generate()

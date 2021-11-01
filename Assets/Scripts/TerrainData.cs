@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,4 +12,9 @@ public class TerrainData : ScriptableObject
     public int textureRows = 16, textureColumns = 16;
     public Texture textureSheet;
     public VoxelMaterial[] materials;
+
+    public VoxelMaterial GetMaterial(int type)
+    {
+        return materials[type - 1];
+    }
 }
