@@ -86,19 +86,15 @@ public class CoastlineAgent : TerrainAgent
         {
             case 0:
                 position.x += sxSearch;
-                Debug.Log("Went Left");
                 break;
             case 1:
                 position.x -= sxSearch;
-                Debug.Log("Went Right");
                 break;
             case 2:
                 position.z += szSearch;
-                Debug.Log("Went Inward");
                 break;
             case 3:
                 position.z -= szSearch;
-                Debug.Log("Went Outward");
                 break;
             default:
                 break;
@@ -113,19 +109,14 @@ public class CoastlineAgent : TerrainAgent
         {
             case 0:
                 position.x += sxSearch;
-                Debug.Log("Went Left");
                 break;
             case 1:
-                position.x -= sxSearch;
-                Debug.Log("Went Right");
                 break;
             case 2:
                 position.z += szSearch;
-                Debug.Log("Went Inward");
                 break;
             case 3:
                 position.z -= szSearch;
-                Debug.Log("Went Outward");
                 break;
             default:
                 break;
