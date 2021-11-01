@@ -7,7 +7,7 @@ public class CoastlineAgent : TerrainAgent
     public int sxSearch = 5;
     public int sySearch = 5;
     public int szSearch = 5;
-
+    public float maxSlope = 1.7f;
     public override void UpdateGrid(VoxelGrid grid)
     {
         Debug.Log("CoastlineAgent working...");
@@ -27,7 +27,7 @@ public class CoastlineAgent : TerrainAgent
                         {
                             if (grid.GetHeight(item.x, item.y, item.z) < 3)
                             {
-                                if (grid.GetMaxSlope(item.x, item.y, item.z, 5) < 1.7)
+                                if (grid.GetMaxSlope(item.x, item.y, item.z, 5) < maxSlope)
                                 {
 
                                     for (int i = item.y; i >= 0; i--)
