@@ -33,12 +33,12 @@ public class HeightMapAgent : TerrainAgent
                 {
                     if (y < height)
                     {
-                        grid.SetCell(x, y, z, 1);
+                        grid.SetVoxelMaterial(x, y, z, 1);
                     }
                 }
             }
         }
-        grid.UpdateDepths();
+        grid.UpdateDepthsAndHeights();
     }
 
     private static void SetMaterialsByDepth(VoxelGrid grid)
@@ -52,11 +52,11 @@ public class HeightMapAgent : TerrainAgent
                     int depth = grid.GetDepth(x, y, z);
 
                     if (depth == 1)
-                        grid.SetCell(x, y, z, 1);
+                        grid.SetVoxelMaterial(x, y, z, 1);
                     else if (depth > 1 && depth <= 4)
-                        grid.SetCell(x, y, z, 2);
+                        grid.SetVoxelMaterial(x, y, z, 2);
                     else if (depth > 4)
-                        grid.SetCell(x, y, z, 3);
+                        grid.SetVoxelMaterial(x, y, z, 3);
                 }
             }
         }

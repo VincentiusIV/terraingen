@@ -126,7 +126,7 @@ public class VoxelRenderer : MonoBehaviour
                     int xOffset = x + this.x;
                     int yOffset = y + this.y;
                     int zOffset = z + this.z;
-                    int type = voxelGrid.GetCell(xOffset, yOffset, zOffset);
+                    int type = voxelGrid.GetVoxelMaterial(xOffset, yOffset, zOffset);
                     if (type != 0)
                     {
                         CreateCube(adjScale, new Vector3(xOffset * scale + adjScale, yOffset * scale + adjScale, zOffset * scale + adjScale), voxelGrid, type);
@@ -187,7 +187,7 @@ public class VoxelRenderer : MonoBehaviour
             {
                 for (int z = 0; z < grid.Depth; z++)
                 {
-                    if (grid.GetCell(x, y, z) != 0)
+                    if (grid.GetVoxelMaterial(x, y, z) != 0)
                         Gizmos.DrawCube(new Vector3(x, y, z), Vector3.one * scale);
                 }
             }
