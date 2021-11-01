@@ -40,6 +40,7 @@ public class ErosionAgent : TerrainAgent
                         float matDepth = material.depth;
                         if (i == voxelMaterials.Count - 1)
                             matDepth += (noiseMap[x, z] - 0.5f) * material.thickness;
+                        matDepth = Mathf.Max(matDepth, 1);
 
                         if (cellType == 0 || depth < matDepth)
                         {
