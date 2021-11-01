@@ -106,7 +106,7 @@ public class VoxelGrid
 
     public float GetMaxSlope(int x, int y, int z)
     {
-        int maxSlope = int.MinValue;
+        float maxSlope = float.MinValue;
         int xMax = x, yMax = y, zMax = z;
         int baseHeight = GetHeight(x, y, z);
         for (int i = -1; i < 2; i++)
@@ -117,7 +117,33 @@ public class VoxelGrid
                     continue;
                 int checkX = x + i;
                 int checkZ = z + j;
-                int diff = Mathf.Abs(baseHeight - GetHeight(checkX, y, checkZ));
+                float a = Mathf.Abs(x - checkX);
+                float b = Mathf.Abs(z - checkZ);
+                float delta = Mathf.Sqrt((Mathf.Pow(a, 2) + Mathf.Pow(b, 2)));
+                float diff = Mathf.Abs(baseHeight - GetHeight(checkX, y, checkZ)) / delta;
+                if (diff > maxSlope)
+                    maxSlope = diff;
+            }
+        }
+        return maxSlope;
+    }
+    public float GetMaxSlope(int x, int y, int z, int range)
+    {
+        float maxSlope = float.MinValue;
+        int xMax = x, yMax = y, zMax = z;
+        int baseHeight = GetHeight(x, y, z);
+        for (int i = -range; i < range + 1; i++)
+        {
+            for (int j = -range; j < range+1; j++)
+            {
+                if (i == 0 && j == 0)
+                    continue;
+                int checkX = x + i;
+                int checkZ = z + j;
+                float a = Mathf.Abs(x - checkX);
+                float b = Mathf.Abs(z - checkZ);
+                float delta = Mathf.Sqrt((Mathf.Pow(a, 2) + Mathf.Pow(b, 2)));
+                float diff = Mathf.Abs(baseHeight - GetHeight(checkX, y, checkZ)) / delta;
                 if (diff > maxSlope)
                     maxSlope = diff;
             }
