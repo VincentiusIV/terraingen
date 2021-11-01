@@ -16,7 +16,6 @@ public static class Noise {
         {
             for(int x = 0; x < width; x++)
             {
-
                 float amplitude = 1;
                 float frequency = 1;
                 float noiseHeight = 0;
@@ -35,13 +34,8 @@ public static class Noise {
                     amplitude *= persistence;
                     frequency *= lacunarity;
                 }
-                if(noiseHeight > maxNoiseHeight)
-                {
-                    maxNoiseHeight = noiseHeight;
-                }else if(noiseHeight < minNoiseHeight)
-                {
-                    minNoiseHeight = noiseHeight;
-                }
+                maxNoiseHeight = Mathf.Max(maxNoiseHeight, noiseHeight);
+                minNoiseHeight = Mathf.Min(minNoiseHeight, noiseHeight);
 
                 float distToCenter = Mathf.Sqrt( (Mathf.Pow(Mathf.Abs(x - (width / 2)), 2) + Mathf.Pow(Mathf.Abs(y - (height / 2)), 2)) ) + Random.Range(-0.9f, 1.1f) + noiseHeight;
                 distToCenter = NormalizeDist(distToCenter, width, height);
@@ -66,7 +60,6 @@ public static class Noise {
         {
             for (int x = 0; x < width; x++)
             {
-                if (noiseMap[x, y] == 999) noiseMap[x, y] = minNoiseHeight;
                 noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
             }
         }

@@ -9,9 +9,9 @@ public class ChunkAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
-        int numChunkX = Mathf.CeilToInt(grid.Width / voxelRenderer.chunkSize);
-        int numChunkY = Mathf.CeilToInt(grid.Height / voxelRenderer.chunkSize);
-        int numChunkZ = Mathf.CeilToInt(grid.Depth / voxelRenderer.chunkSize);
+        int numChunkX = 1 + Mathf.CeilToInt(grid.Width / voxelRenderer.chunkSize);
+        int numChunkY = 1 + Mathf.CeilToInt(grid.Height / voxelRenderer.chunkSize);
+        int numChunkZ = 1 + Mathf.CeilToInt(grid.Depth / voxelRenderer.chunkSize);
         chunkRoot.DestroyChildren();
         voxelRenderer.gameObject.SetActive(true);
         int chunkSize = voxelRenderer.chunkSize;

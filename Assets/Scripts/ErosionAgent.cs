@@ -17,33 +17,18 @@ public class ErosionAgent : TerrainAgent
     {
         SetMaterialLayers(grid);
     }
-
-    private static void SetMaterialsByDepth(VoxelGrid grid)
-    {
-        for (int x = 0; x < grid.Width; x++)
-        {
-            for (int z = 0; z < grid.Depth; z++)
-            {
-                for (int y = grid.Height; y >= 0; y--)
-                {
-                    if(grid.GetCell(x, y, z) != 0)
-                        grid.SetCell(x, y, z, 1);
-                }
-            }
-        }
-    }
     
     private void SetMaterialLayers(VoxelGrid grid)
     {
         List<VoxelMaterial> voxelMaterials = new List<VoxelMaterial>();
         voxelMaterials.AddRange(terrainData.materials);
         voxelMaterials.OrderByDescending(m => m.depth);
-        foreach (var material in voxelMaterials)
+        voxelMaterials.RemoveAll(m => m.materialType == MaterialType.Ignored);
+        for (int i = 0; i < voxelMaterials.Count; i++)
         {
-            if (material.materialType == MaterialType.Ignored)
-                continue;
+            VoxelMaterial material = voxelMaterials[i];
             float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, grid.Width, new Vector2(transform.position.x, transform.position.z));
-            
+
             for (int x = 0; x < grid.Width; x++)
             {
                 for (int z = 0; z < grid.Depth; z++)
@@ -52,10 +37,15 @@ public class ErosionAgent : TerrainAgent
                     {
                         int depth = grid.GetDepth(x, y, z);
                         int cellType = grid.GetCell(x, y, z);
-                        float matDepth = 1 + noiseMap[x, z] * material.depth;
+                        float matDepth = material.depth;
+                        if (i == voxelMaterials.Count - 1)
+                            matDepth += (noiseMap[x, z] - 0.5f) * material.thickness;
+
                         if (cellType == 0 || depth < matDepth)
+                        {
                             continue;
-                        
+                        }
+
                         grid.SetCell(x, y, z, material.index);
                     }
                 }
