@@ -24,10 +24,12 @@ public class ErosionAgent : TerrainAgent
         voxelMaterials.AddRange(terrainData.materials);
         voxelMaterials.OrderByDescending(m => m.depth);
         voxelMaterials.RemoveAll(m => m.materialType == MaterialType.Ignored);
+        List<float[,]> noiseMaps = new List<float[,]>();
         for (int i = 0; i < voxelMaterials.Count; i++)
         {
             VoxelMaterial material = voxelMaterials[i];
             float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, grid.Width, new Vector2(transform.position.x, transform.position.z));
+            noiseMaps.Add(noiseMap);
 
             for (int x = 0; x < grid.Width; x++)
             {
@@ -35,19 +37,15 @@ public class ErosionAgent : TerrainAgent
                 {
                     for (int y = 0; y < grid.Height; y++)
                     {
-                        int depth = grid.GetDepth(x, y, z);
                         int cellType = grid.GetCell(x, y, z);
-                        float matDepth = material.depth;
-                        if (i == voxelMaterials.Count - 1)
-                            matDepth += (noiseMap[x, z] - 0.5f) * material.thickness;
-                        matDepth = Mathf.Max(matDepth, 1);
-
-                        if (cellType == 0 || depth < matDepth)
-                        {
+                        if (cellType == 0)
                             continue;
+                        int depth = grid.GetDepth(x, y, z);
+                        float materialDepth = material.depth;
+                        if(depth >= materialDepth)
+                        {
+                            grid.SetCell(x, y, z, material.index);
                         }
-
-                        grid.SetCell(x, y, z, material.index);
                     }
                 }
             }

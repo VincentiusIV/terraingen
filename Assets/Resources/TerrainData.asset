@@ -40,7 +40,7 @@ MonoBehaviour:
     index: 3
     materialType: 1
     thickness: 1
-    depth: 1
+    depth: 0
     roughness: 0.2
     weight: 0
     angleOfRepose: 0
