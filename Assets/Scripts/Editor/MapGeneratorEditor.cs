@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor (typeof(MapGenerator))]
-public class MapGeneratorEditor : Editor
+[CustomEditor (typeof(NoiseGenerator))]
+public class NoiseGeneratorEditor : Editor
 {
     // Start is called before the first frame update
     public override void OnInspectorGUI()
     {
-        MapGenerator mapGen = (MapGenerator)target;
+        NoiseGenerator mapGen = (NoiseGenerator)target;
         if (DrawDefaultInspector())
         {
             if (mapGen.autoUpdate)

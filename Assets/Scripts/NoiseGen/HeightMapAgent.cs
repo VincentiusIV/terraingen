@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class HeightMapAgent : TerrainAgent
 {
-    public MapGenerator mapGenerator;
+    public NoiseGenerator mapGenerator;
     public int maxHeight = 10;
     public int minHeight = 0;
 
@@ -43,7 +43,7 @@ public class HeightMapAgent : TerrainAgent
     private void OnValidate()
     {
         if (mapGenerator == null)
-            mapGenerator = GetComponentInChildren<MapGenerator>();
+            mapGenerator = GetComponentInChildren<NoiseGenerator>();
     }
 
     private float GetAverage(int x, int z, float[,] noisemap, int width, int depth)

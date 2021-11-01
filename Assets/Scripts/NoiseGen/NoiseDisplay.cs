@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapDisplay : MonoBehaviour
+public class NoiseDisplay : MonoBehaviour
 {
     public Renderer textureRenderer;
     public void drawNoiseMap(float[,] noiseMap)
