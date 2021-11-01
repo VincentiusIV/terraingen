@@ -15,7 +15,6 @@ public class ErosionAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
-        SetMaterialsByDepth(grid);
         SetMaterialLayers(grid);
     }
 
@@ -43,9 +42,7 @@ public class ErosionAgent : TerrainAgent
         {
             if (material.materialType == MaterialType.Ignored)
                 continue;
-            float minNoise = float.MaxValue, maxNoise = float.MinValue;
-
-            float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, falloff, new Vector2(transform.position.x, transform.position.z));
+            float[,] noiseMap = Noise.GenerateNoiseMap(grid.Width, grid.Depth, noiseScale, octaves, persistance, material.roughness, new Vector2(transform.position.x, transform.position.z));
             
             for (int x = 0; x < grid.Width; x++)
             {
@@ -55,22 +52,14 @@ public class ErosionAgent : TerrainAgent
                     {
                         int depth = grid.GetDepth(x, y, z);
                         int cellType = grid.GetCell(x, y, z);
-                        if (cellType == 0 || depth < material.depth)
+                        float matDepth = 1 + noiseMap[x, z] * material.depth;
+                        if (cellType == 0 || depth < matDepth)
                             continue;
-
-                        if(material.index != voxelMaterials.Count)
-                        {
-                            float noise = noiseMap[x, z];
-                            if (noise > maxNoise)
-                                maxNoise = noise;
-                            if (noise < minNoise)
-                                minNoise = noise;
-                        }
+                        
                         grid.SetCell(x, y, z, material.index);
                     }
                 }
             }
-            Debug.LogFormat("For layer {0}, noise range is {1} - {2}", material.name, minNoise, maxNoise);
         }
     }
 }
