@@ -45,8 +45,7 @@ public class ErosionAgent : TerrainAgent
 
         if (keepItSimple)
             return;
-
-        // material type, y of stack top, amount 
+        
         /* 
          * The first step in the process is to erode material from the static
             stratified layers. The amount of material that is set loose is pro-
@@ -65,24 +64,22 @@ public class ErosionAgent : TerrainAgent
             the same material, these are merged together.
          */
 
+        List<TerrainLayer>[,] layerRepresentation = CreateLayerRepresentations(grid);
         for (int iteration = 0; iteration < iterations; iteration++)
         {
-            List<TerrainLayer>[,] layerRepresentation = CreateLayerRepresentations(grid);
 
             for (int i = 0; i < voxelMaterials.Count; i++)
             {
                 VoxelMaterial material = voxelMaterials[i];
-                if (material.materialType != MaterialType.Stratified)
-                    continue;
                 float tanRepose = Mathf.Tan(material.angleOfRepose * Mathf.Deg2Rad);
                 for (int x = 0; x < grid.Width; x++)
                 {
                     for (int z = 0; z < grid.Depth; z++)
                     {
                         float slope = FindMaxSlope(x, z, material.index, layerRepresentation, grid.Width, grid.Depth);
-                        if (slope <= tanRepose)
+                        if (slope < tanRepose)
                             continue;
-                        float hk = FindSLopeSum(x, z, material.index, layerRepresentation, grid.Width, grid.Depth);
+                        float hk = FindSlopeSum(x, z, material.index, layerRepresentation, grid.Width, grid.Depth);
                         float height = GetHeight(x, z, material.index, layerRepresentation);
 
                         for (int ni = -1; ni < 2; ni++)
@@ -96,9 +93,12 @@ public class ErosionAgent : TerrainAgent
                                 if (nx < 0 || nx >= grid.Width || nz < 0 || nz >= grid.Depth)
                                     continue;
                                 float neighborHeight = GetHeight(nx, nz, material.index, layerRepresentation);
-                                float deltaHi = neighborHeight - height;
+                                float deltaHi = Mathf.Abs(height - neighborHeight);
                                 float mi = c * deltaHi / hk;
-                                MoveMass(x, z, nx, nz, mi, material.index, ref layerRepresentation);
+                                if (neighborHeight < height)
+                                    MoveMass(x, z, nx, nz, mi, material.index, ref layerRepresentation);
+                                else
+                                    MoveMass(nx, nz, x, z, mi, material.index, ref layerRepresentation);
                             }
                         }
                     }
@@ -106,9 +106,9 @@ public class ErosionAgent : TerrainAgent
             }
 
             SortLayers(ref layerRepresentation);
-            LayersToVoxels(layerRepresentation, grid);
         }
-
+        
+        LayersToVoxels(layerRepresentation, grid);
     }
 
     private static List<TerrainLayer>[,] CreateLayerRepresentations(VoxelGrid grid)
@@ -153,10 +153,7 @@ public class ErosionAgent : TerrainAgent
         {
             for (int z = 0; z < layerRepresentation.GetLength(1); z++)
             {
-                for (int i = 0; i < layerRepresentation[x, z].Count; i++)
-                {
-
-                }
+                layerRepresentation[x, z].OrderBy(l => terrainData.GetMaterial(l.materialIndex).depth);
             }
         }
     }
@@ -178,7 +175,7 @@ public class ErosionAgent : TerrainAgent
                         continue;
                     }
 
-                    if (amountCounter >= layers[currentLayerIdx].amount)
+                    if (amountCounter >= Mathf.FloorToInt(layers[currentLayerIdx].amount))
                     {
                         ++currentLayerIdx;
                         amountCounter = 0;
@@ -189,8 +186,12 @@ public class ErosionAgent : TerrainAgent
                         }
                     }
 
-                    ++amountCounter;
-                    grid.SetCell(x, y, z, layers[currentLayerIdx].materialIndex);
+                    if (Mathf.FloorToInt(layers[currentLayerIdx].amount) > 0)
+                    {
+                        ++amountCounter;
+                        grid.SetCell(x, y, z, layers[currentLayerIdx].materialIndex);
+                    }
+                   
                 }
             }
         }
@@ -198,14 +199,16 @@ public class ErosionAgent : TerrainAgent
 
     private void MoveMass(int xFrom, int zFrom, int xTo, int zTo, float amount, int materialIndex, ref List<TerrainLayer>[,] layerRepresentation)
     {
+        if (amount == 0)
+            return;
         for (int i = 0; i < layerRepresentation[xFrom, zFrom].Count; i++)
         {
             TerrainLayer fromLayer = layerRepresentation[xFrom, zFrom][i];
             
             if (fromLayer.materialIndex == materialIndex)
             {
-                amount = Mathf.RoundToInt(amount);
                 fromLayer.amount -= amount;
+                fromLayer.amount = Mathf.Max(0, fromLayer.amount);
                 layerRepresentation[xFrom, zFrom][i] = fromLayer;
                 bool foundTarget = false;
                 for (int j = 0; j < layerRepresentation[xTo, zTo].Count; j++)
@@ -215,6 +218,7 @@ public class ErosionAgent : TerrainAgent
                     {
                         foundTarget = true;
                         toLayer.amount += amount;
+                        toLayer.amount = Mathf.Max(0, toLayer.amount);
                         layerRepresentation[xTo, zTo][j] = toLayer; 
                         break;
                     }
@@ -226,12 +230,13 @@ public class ErosionAgent : TerrainAgent
             }
         }
         float yTop = 0;
-        for (int i = 0; i < layerRepresentation[xFrom,zFrom].Count; i++)
+        List<TerrainLayer> fromLayers = layerRepresentation[xFrom, zFrom];
+        for (int i = 0; i < fromLayers.Count; i++)
         {
-            TerrainLayer layer = layerRepresentation[xFrom, zFrom][i];
+            TerrainLayer layer = fromLayers[i];
             yTop += layer.amount;
             layer.topY = yTop;
-            layerRepresentation[xFrom, zFrom][i] = layer;
+            fromLayers[i] = layer;
         }
         yTop = 0;
         for (int i = 0; i < layerRepresentation[xTo, zTo].Count; i++)
@@ -243,7 +248,7 @@ public class ErosionAgent : TerrainAgent
         }
     }
 
-    private float FindSLopeSum(int x, int z, int materialIndex, List<TerrainLayer>[,] layerRepresentation, int width, int depth)
+    private float FindSlopeSum(int x, int z, int materialIndex, List<TerrainLayer>[,] layerRepresentation, int width, int depth)
     {
         float height = GetHeight(x, z, materialIndex, layerRepresentation);
         float slopeSum = 0f;
@@ -258,7 +263,10 @@ public class ErosionAgent : TerrainAgent
                 if (checkX < 0 || checkX >= width || checkZ < 0 || checkZ >= depth)
                     continue;
                 float neighborHeight = GetHeight(checkX, checkZ, materialIndex, layerRepresentation);
-                slopeSum += Mathf.Abs(height - neighborHeight);
+                float slope = Mathf.Abs(height - neighborHeight);
+                if (slope >= 3)
+                    Debug.Log("yayayaya");
+                slopeSum += slope;
             }
         }
         return slopeSum;

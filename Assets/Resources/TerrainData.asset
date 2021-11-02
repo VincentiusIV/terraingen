@@ -48,7 +48,7 @@ MonoBehaviour:
     indices: 020000000200000002000000020000000200000002000000
   - name: Sand
     index: 4
-    materialType: 0
+    materialType: 2
     thickness: 10
     depth: 3
     roughness: 0.13
@@ -60,9 +60,9 @@ MonoBehaviour:
     index: 5
     materialType: 0
     thickness: 10
-    depth: 3
+    depth: 2
     roughness: 0.13
     weight: 0
-    angleOfRepose: 0
+    angleOfRepose: 80
     maximumSlope: 0
     indices: 010000000100000001000000010000000100000001000000

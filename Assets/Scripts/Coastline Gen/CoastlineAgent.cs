@@ -151,7 +151,7 @@ public class CoastlineAgent : TerrainAgent
             {
                 for (int k = -zSearch; k <= zSearch; k++)
                 {
-                    int currentSea rchingX = (int)position.x - i;
+                    int currentSearchingX = (int)position.x - i;
                     int currentSearchingY = (int)position.y - j;
                     int currentSearchingZ = (int)position.z - k;
                     int cellDepth = grid.GetDepth(currentSearchingX, currentSearchingY, currentSearchingZ);
