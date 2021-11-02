@@ -8,28 +8,25 @@ public class caveAgent : TerrainAgent
 {
 
     public int tokens = 100;
-    public int maxCaves = 3;
+    public int maxCaves = 20;
     private int generatedCaves = 0;
     public override void UpdateGrid(VoxelGrid grid)
     {
         Debug.Log("CaveAgent working...");
         for (int i = 0; i < tokens; i++)
         {
-            if(generatedCaves < maxCaves)
+            int x = Random.Range(5, grid.Width - 5);
+            int y = Random.Range(5, (int)grid.Height / 4 - 5);
+            int z = Random.Range(5, grid.Depth - 5);
+            Vector3Int randomPos = new Vector3Int(x, y, z);
+            if (PositionValid(randomPos, grid))
             {
-                int x = Random.Range(5, grid.Width - 5);
-                int y = Random.Range(5, (int)grid.Height/4 - 5);
-                int z = Random.Range(5, grid.Depth - 5);
-                Vector3Int randomPos = new Vector3Int(x, y, z);
-                if (PositionValid(randomPos, grid))
-                {
-                    string axiom = GenerateAxiom(20, true);
-                    string rule = GenerateAxiom(4, false);
-                    Lsystem lsystem = new Lsystem(axiom, rule, grid, randomPos);
-                    lsystem.Generate();
-                    grid = lsystem.grid;
-                }
-                generatedCaves++;
+                string axiom = GenerateAxiom(20, true);
+                string rule = GenerateAxiom(4, false);
+                Lsystem lsystem = new Lsystem(axiom, rule, grid, randomPos);
+                lsystem.Generate();
+                grid = lsystem.grid;
+                Debug.Log("Generated Cave");
             }
         }
     }
@@ -207,7 +204,7 @@ public class Lsystem
             Vector3Int chosenPos = new Vector3Int(position.x + (int)randVector.x, position.y + (int)randVector.y, position.z + (int)randVector.z);
             caveBlobs.Add(chosenPos);
         }
-        for (int i = 0; i < genDepth*2; i++)
+        for (int i = 0; i < genDepth * 2; i++)
         {
             Vector3 randVector = (Random.insideUnitSphere * 3);
             Vector3Int chosenPos = new Vector3Int(position.x + (int)randVector.x, position.y + (int)randVector.y, position.z + (int)randVector.z);
@@ -219,7 +216,7 @@ public class Lsystem
 
     public string IterateAxiom(string _axiom)
     {
-        if(rule != string.Empty)
+        if (rule != string.Empty)
         {
             string currentAxiom = _axiom;
             char ruleReplace = rule[0];
@@ -245,5 +242,5 @@ public class Lsystem
             return _axiom;
         }
     }
-    
+
 }

@@ -65,12 +65,12 @@ public class CoastlineAgent : TerrainAgent
                 {
                     for (int i = voxel.y; i >= 0; i--)
                     {
-                        for (int j = -1; j < 2; j++)
+                        for (int j = -2; j < 3; j++)
                         {
-                            for (int k = -1; k < 2; k++)
+                            for (int k = -2; k < 3; k++)
                             {
                                 if (grid.GetCell(voxel.x + j, i, voxel.z + k) != 0)
-                                    grid.SetCell(voxel.x + j, i, voxel.z, 1);
+                                    grid.SetCell(voxel.x + j, i, voxel.z, 4);
                             }
                         }
                     }
