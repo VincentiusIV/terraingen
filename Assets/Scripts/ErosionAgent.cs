@@ -57,10 +57,10 @@ public class ErosionAgent : TerrainAgent
 
         Debug.Log("Layer rep for (19, 0)=");
         List<(int, int)> layerReps = layerRepresentation[0, 10];
-        for (int i = 0; i < layerReps.Count; i++)
-        {
-            Debug.LogFormat("{0}: {1}x{2}", i, layerReps[i].Item2, terrainData.GetMaterial(layerReps[i].Item1).name);
-        }
+       // for (int i = 0; i < layerReps.Count; i++)
+       // {
+       //     Debug.LogFormat("{0}: {1}x{2}", i, layerReps[i].Item2, terrainData.GetMaterial(layerReps[i].Item1).name);
+       // }
     }
 
     private void InitializeLayers(VoxelGrid grid, List<VoxelMaterial> voxelMaterials)
