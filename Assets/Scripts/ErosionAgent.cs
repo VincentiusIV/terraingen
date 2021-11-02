@@ -21,6 +21,10 @@ public class ErosionAgent : TerrainAgent
     }
 
     public TerrainData terrainData;
+    public int seaLevel = 4;
+    public int dirtType = 3;
+    public int grasType = 2;
+
 
     public float noiseScale;
     public int octaves;
@@ -109,6 +113,7 @@ public class ErosionAgent : TerrainAgent
         }
         
         LayersToVoxels(layerRepresentation, grid);
+        ChangeTopDirtToGrass(grid);
     }
 
     private static List<TerrainLayer>[,] CreateLayerRepresentations(VoxelGrid grid)
@@ -357,5 +362,23 @@ public class ErosionAgent : TerrainAgent
                 }
             }
         }
+    }
+    
+    private void ChangeTopDirtToGrass(VoxelGrid grid)
+    {
+        for (int x = 0; x < grid.Width; x++)
+        {
+            for (int z = 0; z < grid.Depth; z++)
+            {
+                for (int y = seaLevel; y < grid.Height; y++)
+                {
+                    int cellType = grid.GetCell(x, y, z);
+                    int aboveType = grid.GetNeighbor(x, y, z, Direction.Up);
+                    if (cellType == dirtType && aboveType == 0)
+                        grid.SetCell(x, y, z, grasType);
+                }
+            }
+        }
+
     }
 }

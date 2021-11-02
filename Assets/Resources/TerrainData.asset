@@ -63,6 +63,6 @@ MonoBehaviour:
     depth: 2
     roughness: 0.13
     weight: 0
-    angleOfRepose: 80
+    angleOfRepose: 70
     maximumSlope: 0
     indices: 010000000100000001000000010000000100000001000000
