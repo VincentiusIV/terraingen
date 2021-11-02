@@ -13,8 +13,8 @@ public class TerrainData : ScriptableObject
     public Texture textureSheet;
     public VoxelMaterial[] materials;
 
-    public VoxelMaterial GetMaterial(int type)
+    public VoxelMaterial GetMaterial(int materialIndex)
     {
-        return materials[type - 1];
+        return materials[materialIndex - 1];
     }
 }

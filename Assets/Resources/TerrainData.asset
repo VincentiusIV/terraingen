@@ -38,12 +38,12 @@ MonoBehaviour:
     indices: 030000000300000003000000030000000000000002000000
   - name: Dirt
     index: 3
-    materialType: 1
+    materialType: 0
     thickness: 1
     depth: 0
     roughness: 0.2
     weight: 0
-    angleOfRepose: 0
+    angleOfRepose: 5
     maximumSlope: 0
     indices: 020000000200000002000000020000000200000002000000
   - name: Stone
@@ -53,6 +53,6 @@ MonoBehaviour:
     depth: 3
     roughness: 0.13
     weight: 0
-    angleOfRepose: 0
+    angleOfRepose: 20
     maximumSlope: 0
     indices: 010000000100000001000000010000000100000001000000
