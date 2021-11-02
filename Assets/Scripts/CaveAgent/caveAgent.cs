@@ -15,18 +15,22 @@ public class caveAgent : TerrainAgent
         Debug.Log("CaveAgent working...");
         for (int i = 0; i < tokens; i++)
         {
-            int x = Random.Range(5, grid.Width - 5);
-            int y = Random.Range(5, (int)grid.Height / 4 - 5);
-            int z = Random.Range(5, grid.Depth - 5);
-            Vector3Int randomPos = new Vector3Int(x, y, z);
-            if (PositionValid(randomPos, grid))
+            if (generatedCaves < maxCaves)
             {
-                string axiom = GenerateAxiom(20, true);
-                string rule = GenerateAxiom(4, false);
-                Lsystem lsystem = new Lsystem(axiom, rule, grid, randomPos);
-                lsystem.Generate();
-                grid = lsystem.grid;
-                Debug.Log("Generated Cave");
+                int x = Random.Range(5, grid.Width - 5);
+                int y = Random.Range(5, (int)grid.Height / 4 - 5);
+                int z = Random.Range(5, grid.Depth - 5);
+                Vector3Int randomPos = new Vector3Int(x, y, z);
+                if (PositionValid(randomPos, grid))
+                {
+                    string axiom = GenerateAxiom(20, true);
+                    string rule = GenerateAxiom(4, false);
+                    Lsystem lsystem = new Lsystem(axiom, rule, grid, randomPos);
+                    lsystem.Generate();
+                    grid = lsystem.grid;
+                    Debug.Log("Generated Cave");
+                    generatedCaves++;
+                }
             }
         }
     }
@@ -198,15 +202,20 @@ public class Lsystem
     {
         HashSet<Vector3Int> caveBlobs = new HashSet<Vector3Int>();
         int genDepth = 1000;
-        for (int i = 0; i < genDepth; i++)
+        for (int i = 0; i < genDepth * 3; i++)
         {
-            Vector3 randVector = (Random.insideUnitSphere * 6);
-            Vector3Int chosenPos = new Vector3Int(position.x + (int)randVector.x, position.y + (int)randVector.y, position.z + (int)randVector.z);
-            caveBlobs.Add(chosenPos);
-        }
-        for (int i = 0; i < genDepth * 2; i++)
-        {
-            Vector3 randVector = (Random.insideUnitSphere * 3);
+            Vector3 randVector = (Random.insideUnitSphere * (int)Random.Range(0, 5));
+            randVector.x = randVector.x * Random.Range(0.8f, 1.2f);
+            randVector.y = randVector.y * Random.Range(0.8f, 1.2f);
+            randVector.z = randVector.z * Random.Range(0.8f, 1.2f);
+            if (i > genDepth * 2)
+            {
+                randVector = (Random.insideUnitSphere * 3);
+            }
+            else
+            {
+                randVector = (Random.insideUnitSphere * (int)Random.Range(0, 5));
+            }
             Vector3Int chosenPos = new Vector3Int(position.x + (int)randVector.x, position.y + (int)randVector.y, position.z + (int)randVector.z);
             caveBlobs.Add(chosenPos);
         }
