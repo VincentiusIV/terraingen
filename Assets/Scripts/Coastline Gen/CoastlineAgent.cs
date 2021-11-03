@@ -24,7 +24,6 @@ public class CoastlineAgent : TerrainAgent
             if (empty0.Count != 0 && edgeCells.Count != 0) //Found an edge
             {
                 grid = TrackBeach(position, grid, 10);
-                Debug.Log("Found Beach");
             }
         }
 
@@ -32,7 +31,7 @@ public class CoastlineAgent : TerrainAgent
 
     private VoxelGrid TrackBeach(Vector3Int position, VoxelGrid grid, int depth)
     {
-        if(depth <= 0)
+        if(depth < 1)
         {
             return grid;
         }
@@ -44,7 +43,6 @@ public class CoastlineAgent : TerrainAgent
             //set to sand
             if(grid.GetMaxSlope(cell.x, cell.y, cell.z, sxSearch) < maxSlope && cell.y < maxBeachHeight)
             {
-                Debug.Log("Painting Beach");
                 grid.SetCell(cell.x, cell.y, cell.z, 4);
             }
         }

@@ -28,7 +28,7 @@ public class caveAgent : TerrainAgent
                     Lsystem lsystem = new Lsystem(axiom, rule, grid, randomPos);
                     lsystem.Generate();
                     grid = lsystem.grid;
-                    Debug.Log("Generated Cave");
+                    //Debug.Log("Generated Cave");
                     generatedCaves++;
                 }
             }

@@ -31,7 +31,7 @@ public class HeightMapAgent : TerrainAgent
                 {
                     if (y < height)
                     {
-                        grid.SetCell(x, y, z, 1);
+                        grid.SetCell(x, y, z, 3);
                     }
                 }
             }
