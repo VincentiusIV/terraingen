@@ -9,6 +9,8 @@ public class TerrainData : ScriptableObject
     private int cellWidth => textureSheet.width / textureColumns;
     private int cellHeight => textureSheet.height / textureRows;
 
+    public int seaLevel = 4;
+
     public int textureRows = 16, textureColumns = 16;
     public Texture textureSheet;
     public VoxelMaterial[] materials;

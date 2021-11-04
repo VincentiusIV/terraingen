@@ -4,28 +4,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct TerrainLayer
+{
+    public int materialIndex;
+    public float topY;
+    public float amount;
+
+    public TerrainLayer(int materialIndex, float topY, float amount)
+    {
+        this.materialIndex = materialIndex;
+        this.topY = topY;
+        this.amount = amount;
+    }
+}
+
 public class ErosionAgent : TerrainAgent
 {
-    private struct TerrainLayer
-    {
-        public int materialIndex;
-        public float topY;
-        public float amount;
-
-        public TerrainLayer(int materialIndex, float topY, float amount)
-        {
-            this.materialIndex = materialIndex;
-            this.topY = topY;
-            this.amount = amount;
-        }
-    }
-
     public TerrainData terrainData;
-    public int seaLevel = 4;
-    public int dirtType = 3;
-    public int grasType = 2;
-
-
+    
     public float noiseScale;
     public int octaves;
     public float persistance;
@@ -109,14 +105,13 @@ public class ErosionAgent : TerrainAgent
                 }
             }
 
-            SortLayers(ref layerRepresentation);
+            SortLayers(ref layerRepresentation, terrainData);
         }
         
         LayersToVoxels(layerRepresentation, grid);
-        ChangeTopDirtToGrass(grid);
     }
 
-    private static List<TerrainLayer>[,] CreateLayerRepresentations(VoxelGrid grid)
+    public static List<TerrainLayer>[,] CreateLayerRepresentations(VoxelGrid grid)
     {
         List<TerrainLayer>[,] layerRepresentation = new List<TerrainLayer>[grid.Width, grid.Depth];
         for (int x = 0; x < grid.Width; x++)
@@ -152,7 +147,7 @@ public class ErosionAgent : TerrainAgent
         return layerRepresentation;
     }
 
-    private void SortLayers(ref List<TerrainLayer>[,] layerRepresentation)
+    public static void SortLayers(ref List<TerrainLayer>[,] layerRepresentation, TerrainData terrainData)
     {
         for (int x = 0; x < layerRepresentation.GetLength(0); x++)
         {
@@ -163,7 +158,7 @@ public class ErosionAgent : TerrainAgent
         }
     }
 
-    private void LayersToVoxels(List<TerrainLayer>[,] layerRepresentation, VoxelGrid grid)
+    public static void LayersToVoxels(List<TerrainLayer>[,] layerRepresentation, VoxelGrid grid)
     {
         for (int x = 0; x < grid.Width; x++)
         {
@@ -269,8 +264,6 @@ public class ErosionAgent : TerrainAgent
                     continue;
                 float neighborHeight = GetHeight(checkX, checkZ, materialIndex, layerRepresentation);
                 float slope = Mathf.Abs(height - neighborHeight);
-                if (slope >= 3)
-                    Debug.Log("yayayaya");
                 slopeSum += slope;
             }
         }
@@ -364,21 +357,5 @@ public class ErosionAgent : TerrainAgent
         }
     }
     
-    private void ChangeTopDirtToGrass(VoxelGrid grid)
-    {
-        for (int x = 0; x < grid.Width; x++)
-        {
-            for (int z = 0; z < grid.Depth; z++)
-            {
-                for (int y = seaLevel; y < grid.Height; y++)
-                {
-                    int cellType = grid.GetCell(x, y, z);
-                    int aboveType = grid.GetNeighbor(x, y, z, Direction.Up);
-                    if (cellType == dirtType && aboveType == 0)
-                        grid.SetCell(x, y, z, grasType);
-                }
-            }
-        }
 
-    }
 }

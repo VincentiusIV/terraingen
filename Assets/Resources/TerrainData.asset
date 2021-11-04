@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b3edc68102e8964b8f648aa81ae3a8b, type: 3}
   m_Name: TerrainData
   m_EditorClassIdentifier: 
+  seaLevel: 4
   textureRows: 16
   textureColumns: 16
   textureSheet: {fileID: 2800000, guid: e2781e8046cba8f4e98ee1fb8741c318, type: 3}
@@ -50,7 +51,7 @@ MonoBehaviour:
     index: 4
     materialType: 2
     thickness: 10
-    depth: 3
+    depth: 2
     roughness: 0.13
     weight: 0
     angleOfRepose: 20
@@ -63,6 +64,6 @@ MonoBehaviour:
     depth: 2
     roughness: 0.13
     weight: 0
-    angleOfRepose: 70
+    angleOfRepose: 85
     maximumSlope: 0
     indices: 010000000100000001000000010000000100000001000000
