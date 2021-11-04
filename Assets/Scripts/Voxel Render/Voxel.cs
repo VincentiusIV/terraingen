@@ -24,7 +24,7 @@ public class VoxelGrid
     public int Width => cells.GetLength(0);
     public int Depth => cells.GetLength(1);
     public int Height => cells.GetLength(2);
-    
+
     private Voxel[,,] cells;
 
     public VoxelGrid(int size, int height)
@@ -39,11 +39,25 @@ public class VoxelGrid
         return cells[x, z, y].material;
     }
 
+    public bool InBounds(int x, int y, int z)
+    {
+        if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
+        {
+            return false;
+        }
+        return true;
+    }
+
     public void SetCell(int x, int y, int z, int type)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Depth)
             return;
         cells[x, z, y].material = type;
+    }
+
+    public void SetCell(Vector3Int position, int type)
+    {
+        SetCell(position.x, position.y, position.z, type);
     }
 
     public int GetDepth(int x, int y, int z)
@@ -152,6 +166,16 @@ public class VoxelGrid
         return maxSlope;
     }
 
+    public float GetMaxSlope(Vector3Int position, int range)
+    {
+        return GetMaxSlope(position.x, position.y, position.z, range);
+    }
+
+    public float GetMaxSlope(Vector3Int position)
+    {
+        return GetMaxSlope(position.x, position.y, position.z);
+    }
+
     public int GetCell(Vector3 position)
     {
         return GetCell(Vector3Int.CeilToInt(position));
@@ -161,17 +185,22 @@ public class VoxelGrid
     {
         return GetCell(position.x, position.y, position.z);
     }
-    
+
     public int GetNeighbor(Vector3 position, Direction dir)
     {
         return GetNeighbor(Vector3Int.FloorToInt(position), dir);
     }
-    
+
     public int GetNeighbor(Vector3Int position, Direction dir)
     {
         return GetNeighbor(position.x, position.y, position.z, dir);
     }
-    
+
+    public bool InBounds(Vector3Int position)
+    {
+        return InBounds(position.x, position.y, position.z);
+    }
+
     public int GetNeighbor(int x, int y, int z, Direction dir)
     {
         Vector3Int offset = offsets[(int)dir];

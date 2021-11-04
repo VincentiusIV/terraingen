@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class caveAgent : TerrainAgent
+public class CaveGenAgent : TerrainAgent
 {
 
     public int tokens = 100;
@@ -190,12 +190,12 @@ public class Lsystem
         {
             cavecells.UnionWith(generateRandomSphere(item));
         }
-        Debug.Log(cavecells.Count);
+        //Debug.Log(cavecells.Count);
         foreach (var cell in cavecells)
         {
             grid.SetCell(cell.x, cell.y, cell.z, 0);
         }
-        Debug.LogFormat("Generated Cave near {0} - {1} - {2}", nodes[0].x, nodes[0].y, nodes[0].z);
+       // Debug.LogFormat("Generated Cave near {0} - {1} - {2}", nodes[0].x, nodes[0].y, nodes[0].z);
     }
 
     private HashSet<Vector3Int> generateRandomSphere(Vector3Int position)
@@ -242,7 +242,7 @@ public class Lsystem
                 }
 
             }
-            Debug.Log(currentAxiom);
+            //Debug.Log(currentAxiom);
             string returnAxiom = currentAxiom.Replace("$", rule.Substring(1));
             return returnAxiom;
         }
