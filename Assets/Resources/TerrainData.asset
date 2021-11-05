@@ -57,8 +57,18 @@ MonoBehaviour:
     angleOfRepose: 20
     maximumSlope: 0
     indices: 120000001200000012000000120000001200000012000000
-  - name: Stone
+  - name: BlackSand
     index: 5
+    materialType: 0
+    thickness: 10
+    depth: 2
+    roughness: 0.13
+    weight: 0
+    angleOfRepose: 85
+    maximumSlope: 0
+    indices: 250000002500000025000000250000002500000025000000
+  - name: Stone
+    index: 6
     materialType: 0
     thickness: 10
     depth: 2

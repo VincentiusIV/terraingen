@@ -23,7 +23,10 @@ public class GrassAgent : TerrainAgent
                     int cellType = grid.GetCell(x, y, z);
                     int aboveType = grid.GetNeighbor(x, y, z, Direction.Up);
                     if (cellType == dirtType && aboveType == 0)
+                    {
                         grid.SetCell(x, y, z, grasType);
+                    }
+
                 }
             }
         }

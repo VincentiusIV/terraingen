@@ -16,6 +16,7 @@ public class CoastlineAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+
         int tokens = (int)(grid.Width * tokenScalar);
         savedSR = searchRadius;
         Debug.Log("Beach Agent Working... (Pounding Sand)");
@@ -29,30 +30,41 @@ public class CoastlineAgent : TerrainAgent
                 }
             }
         }
+        minBeachHeight++;
         for (int token = 0; token < tokens; token++)
         {
             Vector2 randXZ = Random.insideUnitCircle;
+            int type = (int)Mathf.Round(randXZ.x);
+            if (type == 1) type = 4;
+            if (type == 0) type = 5;
             Vector3Int position = new Vector3Int((int)(randXZ.x * grid.Width), minBeachHeight, (int)(randXZ.y * grid.Depth));
-            grid = MakeBeach(position, grid);
+            grid = MakeBeach(position, grid, type);
             //Debug.Log(position);
             searchRadius = savedSR; //Reset decrementing SR
         }
 
     }
 
-    private VoxelGrid MakeBeach(Vector3Int position, VoxelGrid grid)
+    private VoxelGrid MakeBeach(Vector3Int position, VoxelGrid grid, int type)
     {
         List<Vector3Int> beachLine = ScanCells(position, grid, 0);
         List<Vector3Int> surfaceCells = ScanCells(position, grid, 1);
         if (beachLine.Count != 0 && surfaceCells.Count != 0)
         {
-            grid = ExpandBeach(position, grid, itterationDepth);
+            foreach (var cell in surfaceCells)
+            {
+                if (grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight)
+                {
+                    grid.SetCell(cell, type);
+                }
+            }
+            grid = ExpandBeach(position, grid, itterationDepth, type);
             //grid = ConnectBeach(grid);
         }
         return grid;
     }
 
-    private VoxelGrid ExpandBeach(Vector3Int position, VoxelGrid grid, int depth)
+    private VoxelGrid ExpandBeach(Vector3Int position, VoxelGrid grid, int depth, int type)
     {
         if(depth < 1)
         {
@@ -89,7 +101,7 @@ public class CoastlineAgent : TerrainAgent
             {
                 if (grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight)
                 {
-                    grid.SetCell(cell, 4);
+                    grid.SetCell(cell, type);
                 }
             }
         }
@@ -97,7 +109,7 @@ public class CoastlineAgent : TerrainAgent
         {
             searchRadius--;
         }
-        grid = ExpandBeach(position, grid, depth - 1);
+        grid = ExpandBeach(position, grid, depth - 1, type);
 
         return grid;
     }
