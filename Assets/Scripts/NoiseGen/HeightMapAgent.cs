@@ -36,7 +36,6 @@ public class HeightMapAgent : TerrainAgent
                 }
             }
         }
-        grid.UpdateDepthsAndHeights();
     }
 
     private void OnValidate()

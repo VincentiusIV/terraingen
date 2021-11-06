@@ -1,6 +1,7 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
 
 public class TerrainPipeline : MonoBehaviour
 {
@@ -18,12 +19,21 @@ public class TerrainPipeline : MonoBehaviour
     [ContextMenu("Run")]
     public void GenerateTerrain()
     {
-        Debug.Log("Running the terrain pipeline...");
+        UnityEngine.Debug.Log("Running the terrain pipeline...");
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         Grid = new VoxelGrid(size, maxHeight);
         foreach (var agent in agents)
         {
-            Debug.LogFormat("Agent active: {0}", agent.GetType().ToString());
+            UnityEngine.Debug.LogFormat("Agent active: {0}", agent.GetType().ToString());
             agent.UpdateGrid(Grid);
+            Grid.UpdateDepthsAndHeights();
         }
+        stopwatch.Stop();
+        TimeSpan ts = stopwatch.Elapsed;
+        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            ts.Hours, ts.Minutes, ts.Seconds,
+            ts.Milliseconds / 10);
+        UnityEngine.Debug.LogFormat("Pipeline finished after t={0}s", elapsedTime);
     }
 }

@@ -44,7 +44,7 @@ MonoBehaviour:
     depth: 0
     roughness: 0.2
     weight: 0
-    angleOfRepose: 5
+    angleOfRepose: 1
     maximumSlope: 0
     indices: 020000000200000002000000020000000200000002000000
   - name: Sand

@@ -9,6 +9,7 @@ public class VolcanoAgent : TerrainAgent
     public float rimWidth = 0.7f;
     public float rimSteepness = 0.42f;
     public int minFloor = 1, maxFloor = 10;
+    public AnimationCurve volcanoBlend;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
@@ -17,8 +18,8 @@ public class VolcanoAgent : TerrainAgent
         for (int i = 0; i < volcanoCount; i++)
         {
             Vector3 volcanoPos = new Vector3(100, 0, 100);// new Vector3(Random.Range(0f, grid.Width - 1), 0f, Random.Range(0f, grid.Depth - 1));
-            float volcanoFloorHeight = Random.Range(minFloor, maxFloor);
-            float radius = Random.Range(minRadius, maxRadius);
+            float volcanoFloorHeight = grid.GetHeight(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) - Random.Range(minFloor, maxFloor);
+            float radius =Random.Range(minRadius, maxRadius);
             List<TerrainLayer>[,] layerRepresentation = ErosionAgent.CreateLayerRepresentations(grid);
             for (int x = 0; x < grid.Width; x++)
             {
@@ -33,7 +34,8 @@ public class VolcanoAgent : TerrainAgent
                     {
                         TerrainLayer layer = layers[j];
                         float prevAmount = layer.amount;
-                        layer.amount = prevAmount + (volcanoShape * radius / layers.Count);
+                        float baseHeight = Mathf.Lerp(volcanoFloorHeight, prevAmount, volcanoBlend.Evaluate(distanceFromCenter));
+                        layer.amount = baseHeight + (volcanoShape * radius / layers.Count);
                         layers[j] = layer;
                     }
                     layerRepresentation[x, z] = layers;
