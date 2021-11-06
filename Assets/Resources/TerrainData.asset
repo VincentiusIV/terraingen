@@ -40,7 +40,7 @@ MonoBehaviour:
   - name: Dirt
     index: 3
     materialType: 0
-    thickness: 1
+    thickness: 0.5
     depth: 0
     roughness: 0.2
     weight: 0
@@ -70,7 +70,7 @@ MonoBehaviour:
   - name: Stone
     index: 6
     materialType: 0
-    thickness: 10
+    thickness: 1
     depth: 2
     roughness: 0.13
     weight: 0

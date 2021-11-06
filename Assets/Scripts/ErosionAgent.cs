@@ -95,6 +95,7 @@ public class ErosionAgent : TerrainAgent
                                 float neighborHeight = GetHeight(nx, nz, material.index, layerRepresentation);
                                 float deltaHi = Mathf.Abs(height - neighborHeight);
                                 float mi = c * deltaHi / hk;
+                                mi /= material.thickness;
                                 if (neighborHeight < height)
                                     MoveMass(x, z, nx, nz, mi, material.index, ref layerRepresentation);
                                 else
