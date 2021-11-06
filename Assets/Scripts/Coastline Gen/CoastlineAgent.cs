@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CoastlineAgent : TerrainAgent
@@ -13,173 +14,131 @@ public class CoastlineAgent : TerrainAgent
     public int itterationDepth = 6;
     public float maxSlope = 1.5f;
     public int slopeRange = 3;
+    private HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
+    private int MaxTries = 25;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
-
+        grid.UpdateDepthsAndHeights();
         int tokens = (int)(grid.Width * tokenScalar);
-        savedSR = searchRadius;
-        Debug.Log("Beach Agent Working... (Pounding Sand)");
-        for (int x = 0; x < grid.Width; x++)
-        {
-            for (int z = 0; z < grid.Depth; z++)
-            {
-                for (int y = 0; y < minBeachHeight; y++)
-                {
-                    grid.SetCell(x, y, z, 4);
-                }
-            }
-        }
-        minBeachHeight++;
         for (int token = 0; token < tokens; token++)
         {
-            Vector2 randXZ = Random.insideUnitCircle;
-            int type = (int)Mathf.Round(randXZ.x);
-            if (type == 1) type = 4;
-            if (type == 0) type = 5;
-            Vector3Int position = new Vector3Int((int)(randXZ.x * grid.Width), minBeachHeight, (int)(randXZ.y * grid.Depth));
-            grid = MakeBeach(position, grid, type);
-            //Debug.Log(position);
-            searchRadius = savedSR; //Reset decrementing SR
-        }
-
-    }
-
-    private VoxelGrid MakeBeach(Vector3Int position, VoxelGrid grid, int type)
-    {
-        List<Vector3Int> beachLine = ScanCells(position, grid, 0);
-        List<Vector3Int> surfaceCells = ScanCells(position, grid, 1);
-        if (beachLine.Count != 0 && surfaceCells.Count != 0)
-        {
-            foreach (var cell in surfaceCells)
+            Vector3Int randomPos = new Vector3Int(Random.Range(0,grid.Width), Random.Range(minBeachHeight, maxBeachHeight), Random.Range(0, grid.Depth));
+            if(nearCoast(randomPos, grid) && !visited.Contains(randomPos))
             {
-                if (grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight)
+                float selector = Mathf.PerlinNoise(randomPos.x, randomPos.y);
+                int beachType;
+                if(selector < 0.5f)
                 {
-                    grid.SetCell(cell, type);
+                    beachType = 4;
                 }
+                else
+                {
+                    beachType = 5;
+                }
+                visited.Add(randomPos);
+                DrawBeach(randomPos, grid, itterationDepth, beachType);
             }
-            grid = ExpandBeach(position, grid, itterationDepth, type);
-            //grid = ConnectBeach(grid);
         }
-        return grid;
     }
 
-    private VoxelGrid ExpandBeach(Vector3Int position, VoxelGrid grid, int depth, int type)
+    private VoxelGrid DrawBeach(Vector3Int pos, VoxelGrid grid, int depth, int type)
     {
         if(depth < 1)
         {
             return grid;
         }
-
-        for (int i = 0; i < 4; i++)
+        foreach (var cell in Brush(pos, grid))
         {
-            if(FindNext(position, grid, i).x != -1)
+            if (grid.GetCell(cell) != 0 && grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight) 
             {
-                position = FindNext(position, grid, i);
-                break;
-            }
-            else
-            {
-                return grid; //No suitable land nearby
+                grid.SetCell(cell, type);
             }
         }
-        /*
-        if((int)Random.Range(0,8) < 1 && position.y < maxBeachHeight) //12.5%
+        pos = NextPosition(pos, grid);
+        if(pos.x == -1) //No location was found when trying... stop
         {
-            position.y++;
+            return grid;
         }
-        if ((int)Random.Range(0, 8) < 1 && position.y > minBeachHeight) //12.5%
-        {
-            position.y--;
-        }
-        */
-        List<Vector3Int> beachLine = ScanCells(position, grid, 2);
-        List<Vector3Int> surfaceCells = ScanCells(position, grid, 1);
-        if (beachLine.Count != 0 && surfaceCells.Count != 0)
-        {
-            foreach (var cell in surfaceCells)
-            {
-                if (grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight)
-                {
-                    grid.SetCell(cell, type);
-                }
-            }
-        }
-        if (searchRadius > 3 && (int)Random.Range(0, 3) < 1)
-        {
-            searchRadius--;
-        }
-        grid = ExpandBeach(position, grid, depth - 1, type);
-
+        Debug.Log("Found adjacent");
+        grid = DrawBeach(pos, grid, depth-1, type);
         return grid;
     }
 
-    private Vector3Int FindNext(Vector3Int position, VoxelGrid grid, int dir)
+    private Vector3Int NextPosition(Vector3Int pos, VoxelGrid grid)
     {
-        switch (dir)
+        Vector3Int checking = pos;
+        checking.x = pos.x + (int)Random.Range(-searchRadius / 2, searchRadius / 2);
+        checking.z = pos.z + (int)Random.Range(-searchRadius / 2, searchRadius / 2);
+        int tries = 0;
+        while (!nearCoast(checking, grid) && !visited.Contains(checking))
         {
-            case 0:
-                position.x = position.x + searchRadius;
-                break;
-            case 1:
-                position.x = position.x - searchRadius;
-                break;
-            case 2:
-                position.z = position.z + searchRadius;
-                break;
-            case 3:
-                position.z = position.z - searchRadius;
-                break;
+            checking.x = pos.x + (int)Random.Range(-searchRadius / 2, searchRadius / 2);
+            checking.z = pos.z + (int)Random.Range(-searchRadius / 2, searchRadius / 2);
+            tries++;
+            if(tries > MaxTries)
+            {
+                return new Vector3Int(-1, -1, -1);
+            }
         }
-        List<Vector3Int> beachLine = ScanCells(position, grid, 2);
-        List<Vector3Int> surfaceCells = ScanCells(position, grid, 1);
-        if (beachLine.Count != 0 && surfaceCells.Count != 0)
-        {
-            return position;
-        }
-        return new Vector3Int(-1,-1,-1);
+        visited.Add(checking);
+        return checking;
     }
 
-    private List<Vector3Int> ScanCells(Vector3Int position, VoxelGrid grid, int mode) 
-        //0: Get empty cells at y = minBeachHeight. 1: get Surface in a xyz radius 
-        //2: get empty at specified Y
+    private List<Vector3Int> Brush(Vector3Int pos, VoxelGrid grid)
     {
-        List<Vector3Int> cells = new List<Vector3Int>();
-        int search = Mathf.FloorToInt(searchRadius / 2);
-        for (int x = -search; x < search + 1; x++)
+        int itt = Mathf.FloorToInt(searchRadius / 2) - 1;
+        bool ittToggle = false;
+        HashSet<Vector3Int> cells = new HashSet<Vector3Int>();
+        for (int x = (int)(-searchRadius / 2); x < (int)(searchRadius / 2) + 1; x++)
         {
-            for (int z = -search; z < search + 1; z++)
+            for (int z = 0; z < searchRadius; z++)
             {
-                if (mode == 0)
+                if (z > itt && z < (searchRadius - itt - 1))
                 {
-                    if (grid.GetCell(position.x + x, minBeachHeight, position.z + z) == 0 && grid.InBounds(position.x + x, minBeachHeight, position.z + z))
-                    {
-                        cells.Add(new Vector3Int(position.x + x, minBeachHeight, position.z + z));
-                    }
-                }else if(mode == 2)
-                {
-                    if (grid.GetCell(position.x + x, position.y, position.z + z) == 0 && grid.InBounds(position.x + x, position.y, position.z + z))
-                    {
-                        cells.Add(new Vector3Int(position.x + x, position.y, position.z + z));
-                    }
+                    int depth = grid.GetDepth(pos.x + x, pos.y, pos.z + (z - (int)(searchRadius / 2))) -1;
+                    cells.Add(new Vector3Int(pos.x + x, pos.y + depth, pos.z + (z - (int)(searchRadius / 2))));
                 }
-                else if (mode == 1)
+            }
+            if (itt < 0)
+            {
+                ittToggle = true;
+            }
+            if (ittToggle)
+            {
+                itt++;
+            }
+            else
+            {
+                itt--;
+            }
+        }
+        List<Vector3Int> selected = cells.ToList();
+        return selected;
+    }
+
+    private bool nearCoast(Vector3Int pos, VoxelGrid grid)
+    {
+        bool foundEmpty = false;
+        bool foundFilled = false;
+        for (int x = (int)(-searchRadius / 2); x < (int)(searchRadius / 2) + 1; x++)
+        {
+            for (int z = (int)(-searchRadius / 2); z < (int)(searchRadius / 2) + 1; z++)
+            {
+                if(grid.GetCell(pos.x + x , pos.y, pos.z + z) == 0 && !foundEmpty && grid.InBounds(pos.x + x, pos.y, pos.z + z))
                 {
-                    for (int y = -searchRadius; y < searchRadius; y++)
-                    {
-                        if (grid.GetCell(position.x + x, y, position.z + z) != 0 && grid.InBounds(position.x + x, minBeachHeight, position.z + z))
-                        {
-                            cells.Add(new Vector3Int(position.x + x, y, position.z + z));
-                        }
-                    }
+                    foundEmpty = true;
                 }
-                else
+                if (grid.GetCell(pos.x + x, pos.y, pos.z + z) != 0 && !foundFilled && grid.InBounds(pos.x + x, pos.y, pos.z + z))
                 {
-                    continue;
+                    foundFilled = true;
+                }
+                if(foundFilled && foundEmpty)
+                {
+                    return true;
                 }
             }
         }
-
-        return cells;
+        return false;
     }
 }

@@ -14,9 +14,13 @@ public class TreeAgent : TerrainAgent
     public GameObject Rock4;
     public GameObject Rock5;
     public GameObject Rock6;
+    private Transform Trees;
+    private Transform Rocks;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        Trees = GameObject.Find("Trees").GetComponent<Transform>();
+        Rocks = GameObject.Find("Rocks").GetComponent<Transform>();
         treeA.transform.Rotate(-90f, 0f, 0f, Space.Self);
         for (int x = 0; x < grid.Width; x++)
         {
@@ -33,11 +37,11 @@ public class TreeAgent : TerrainAgent
                             GameObject tree;
                             if(Random.Range(0, 2) < 1)
                             {
-                                tree = Instantiate(treeA, position, Quaternion.identity);
+                                tree = Instantiate(treeA, position, Quaternion.identity, Trees);
                             }
                             else
                             {
-                                tree = Instantiate(treeB, position, Quaternion.identity);
+                                tree = Instantiate(treeB, position, Quaternion.identity, Trees);
                             }
                             tree.transform.Rotate(-90f, 0f, 0f, Space.Self);
                         }
@@ -51,25 +55,25 @@ public class TreeAgent : TerrainAgent
                             switch (select)
                             {
                                 case 0:
-                                    Rock = Instantiate(Rock1, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock1, position, Quaternion.identity, Rocks);
                                     break;
                                 case 1:
-                                    Rock = Instantiate(Rock2, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock2, position, Quaternion.identity, Rocks);
                                     break;
                                 case 2:
-                                    Rock = Instantiate(Rock3, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock3, position, Quaternion.identity, Rocks);
                                     break;
                                 case 3:
-                                    Rock = Instantiate(Rock4, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock4, position, Quaternion.identity, Rocks);
                                     break;
                                 case 4:
-                                    Rock = Instantiate(Rock5, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock5, position, Quaternion.identity, Rocks);
                                     break;
                                 case 5:
-                                    Rock = Instantiate(Rock6, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock6, position, Quaternion.identity, Rocks);
                                     break;
                                 default:
-                                    Rock = Instantiate(Rock1, position, Quaternion.identity);
+                                    Rock = Instantiate(Rock1, position, Quaternion.identity, Rocks);
                                     break;
                             }
                             Rock.transform.Rotate(Vector3.Scale(Random.onUnitSphere, new Vector3(180, 180, 180)));
