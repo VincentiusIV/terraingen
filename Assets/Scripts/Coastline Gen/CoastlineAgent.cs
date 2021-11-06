@@ -26,15 +26,15 @@ public class CoastlineAgent : TerrainAgent
             Vector3Int randomPos = new Vector3Int(Random.Range(0,grid.Width), Random.Range(minBeachHeight, maxBeachHeight), Random.Range(0, grid.Depth));
             if(nearCoast(randomPos, grid) && !visited.Contains(randomPos))
             {
-                float selector = Mathf.PerlinNoise(randomPos.x, randomPos.y);
+                float selector = Random.Range(0,3);
                 int beachType;
-                if(selector < 0.5f)
+                if(selector < 1)
                 {
-                    beachType = 4;
+                    beachType = 5;
                 }
                 else
                 {
-                    beachType = 5;
+                    beachType = 4;
                 }
                 visited.Add(randomPos);
                 DrawBeach(randomPos, grid, itterationDepth, beachType);
