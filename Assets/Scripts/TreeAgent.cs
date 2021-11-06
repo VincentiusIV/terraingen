@@ -10,6 +10,8 @@ public class TreeAgent : TerrainAgent
     private Transform Rocks;
     public float treeSpawnChance = 1 / 12f;
     public float rockSpawnChance = 1 / 25f;
+    public float maxTreeSlope = 2f;
+
     public GameObject[] trees;
     public GameObject[] rocks;
 
@@ -26,8 +28,13 @@ public class TreeAgent : TerrainAgent
                 for (int y = lowerTreeHeight; y < upperTreeHeigt; y++)
                 {
                     Vector3Int position = new Vector3Int(x, y, z);
+
+                    
                     if (grid.GetDepth(position.x, position.y, position.z) == 1 && grid.GetCell(position.x, position.y, position.z) == 2)
                     {
+                        float slope = grid.GetMaxSlope(position);
+                        if (slope > maxTreeSlope)
+                            continue;
                         if (Random.Range(0f, 1f) < treeSpawnChance)
                         {
                             position.y++;
@@ -37,7 +44,7 @@ public class TreeAgent : TerrainAgent
                             tree.transform.Rotate(-90f, Random.Range(0, 360f), 0f, Space.Self);
                         }
                     }
-                    if (grid.GetDepth(position.x, position.y, position.z) == 0 && grid.GetCell(position.x, position.y, position.z) == 2 && grid.GetMaxSlope(position, 3) < 7)
+                    if (grid.GetDepth(position.x, position.y, position.z) == 1 && grid.GetCell(position.x, position.y, position.z) == 2 && grid.GetMaxSlope(position, 3) < 7)
                     {
                         if (Random.Range(0f, 1f) < rockSpawnChance)
                         {
