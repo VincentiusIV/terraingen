@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class VolcanoAgent : TerrainAgent
 {
+    // volcano pos, radius
+    public static List<(Vector3, float)> Volcanos = new List<(Vector3, float)>();
+
     public int minVolcano = 1, maxVolcano = 1;
     public float minRadius = 10f, maxRadius = 100f;
     public float rimWidth = 0.7f;
@@ -17,9 +20,12 @@ public class VolcanoAgent : TerrainAgent
         Debug.LogFormat("Generating {0} volcanoes...", volcanoCount);
         for (int i = 0; i < volcanoCount; i++)
         {
-            Vector3 volcanoPos = new Vector3(100, 0, 100);// new Vector3(Random.Range(0f, grid.Width - 1), 0f, Random.Range(0f, grid.Depth - 1));
-            float volcanoFloorHeight = grid.GetHeight(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) - Random.Range(minFloor, maxFloor);
-            float radius =Random.Range(minRadius, maxRadius);
+            Vector3 volcanoPos = new Vector3(Random.Range(0f, grid.Width - 1), 0f, Random.Range(0f, grid.Depth - 1));
+            float volcanoFloorHeight = grid.GetHeight(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) + Random.Range(minFloor, maxFloor);
+            float radius = Random.Range(minRadius, maxRadius);
+
+            Volcanos.Add((volcanoPos, radius));
+
             List<TerrainLayer>[,] layerRepresentation = ErosionAgent.CreateLayerRepresentations(grid);
             for (int x = 0; x < grid.Width; x++)
             {
@@ -34,7 +40,7 @@ public class VolcanoAgent : TerrainAgent
                     {
                         TerrainLayer layer = layers[j];
                         float prevAmount = layer.amount;
-                        float baseHeight = Mathf.Lerp(volcanoFloorHeight, prevAmount, volcanoBlend.Evaluate(distanceFromCenter));
+                        float baseHeight = Mathf.Lerp(volcanoFloorHeight, prevAmount, volcanoBlend.Evaluate(volcanoX));
                         layer.amount = baseHeight + (volcanoShape * radius / layers.Count);
                         layers[j] = layer;
                     }

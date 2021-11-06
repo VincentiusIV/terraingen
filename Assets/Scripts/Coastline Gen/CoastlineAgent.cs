@@ -19,7 +19,6 @@ public class CoastlineAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
-        grid.UpdateDepthsAndHeights();
         int tokens = (int)(grid.Width * tokenScalar);
         for (int token = 0; token < tokens; token++)
         {

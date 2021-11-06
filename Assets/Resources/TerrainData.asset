@@ -40,18 +40,18 @@ MonoBehaviour:
   - name: Dirt
     index: 3
     materialType: 0
-    thickness: 0.5
-    depth: 0
+    thickness: 0.1
+    depth: 1
     roughness: 0.2
     weight: 0
-    angleOfRepose: 1
+    angleOfRepose: 5
     maximumSlope: 0
     indices: 020000000200000002000000020000000200000002000000
   - name: Sand
     index: 4
     materialType: 2
     thickness: 10
-    depth: 2
+    depth: 0
     roughness: 0.13
     weight: 0
     angleOfRepose: 20
