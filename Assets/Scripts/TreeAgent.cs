@@ -21,7 +21,6 @@ public class TreeAgent : TerrainAgent
     {
         Trees = GameObject.Find("Trees").GetComponent<Transform>();
         Rocks = GameObject.Find("Rocks").GetComponent<Transform>();
-        treeA.transform.Rotate(-90f, 0f, 0f, Space.Self);
         for (int x = 0; x < grid.Width; x++)
         {
             for (int z = 0; z < grid.Depth; z++)
@@ -29,9 +28,9 @@ public class TreeAgent : TerrainAgent
                 for (int y = lowerTreeHeight; y < upperTreeHeigt; y++)
                 {
                     Vector3Int position = new Vector3Int(x, y, z);
-                    if (grid.GetDepth(position.x, position.y, position.z) == 0 && grid.GetCell(position.x, position.y, position.z) == 2 && grid.GetMaxSlope(position, 3) < 7)
+                    if (grid.GetDepth(position.x, position.y, position.z) == 1 && grid.GetCell(position.x, position.y, position.z) == 2)
                     {
-                        if(Random.Range(0,8) < 1)
+                        if(Random.Range(0,12) < 1)
                         {
                             position.y++;
                             GameObject tree;
