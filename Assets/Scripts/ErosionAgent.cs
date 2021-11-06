@@ -207,7 +207,6 @@ public class ErosionAgent : TerrainAgent
             
             if (fromLayer.materialIndex == materialIndex)
             {
-                        amount = Mathf.Min(amount, fromLayer.amount);
                 fromLayer.amount -= amount;
                 fromLayer.amount = Mathf.Max(0, fromLayer.amount);
                 layerRepresentation[xFrom, zFrom][i] = fromLayer;
