@@ -20,20 +20,31 @@ public class TerrainPipeline : MonoBehaviour
     public void GenerateTerrain()
     {
         UnityEngine.Debug.Log("Running the terrain pipeline...");
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
+        Stopwatch totalWatch = new Stopwatch();
+        totalWatch.Start();
+        Stopwatch agentWatch = new Stopwatch();
         Grid = new VoxelGrid(size, maxHeight);
         foreach (var agent in agents)
         {
+            agentWatch.Start();
             UnityEngine.Debug.LogFormat("Agent active: {0}", agent.GetType().ToString());
             agent.UpdateGrid(Grid);
             Grid.UpdateDepthsAndHeights();
+
+            agentWatch.Stop();
+            PrintTimeStamp(agentWatch, agent.GetType().ToString());
+            agentWatch.Reset();
         }
-        stopwatch.Stop();
-        TimeSpan ts = stopwatch.Elapsed;
+        totalWatch.Stop();
+        PrintTimeStamp(totalWatch, "Terrain Pipeline");
+    }
+
+    private static void PrintTimeStamp(Stopwatch totalWatch, string prefix)
+    {
+        TimeSpan ts = totalWatch.Elapsed;
         string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
             ts.Hours, ts.Minutes, ts.Seconds,
             ts.Milliseconds / 10);
-        UnityEngine.Debug.LogFormat("Pipeline finished after t={0}s", elapsedTime);
+        UnityEngine.Debug.LogFormat("{0} finished after t={1}s", prefix, elapsedTime);
     }
 }

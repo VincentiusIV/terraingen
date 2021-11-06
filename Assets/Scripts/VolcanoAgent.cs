@@ -66,4 +66,13 @@ public class VolcanoAgent : TerrainAgent
     {
         return Mathf.Max(Mathf.Min(Cavity(x), Rim(x, rimWidth, rimSteepness)), floorHeight);
     }
+
+    private void OnDrawGizmos()
+    {
+        foreach (var volcano in Volcanos)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(volcano.Item1, volcano.Item2);
+        }
+    }
 }

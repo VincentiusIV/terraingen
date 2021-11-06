@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct TerrainLayer
+public class TerrainLayer
 {
     public int materialIndex;
     public float topY;
@@ -42,27 +42,6 @@ public class ErosionAgent : TerrainAgent
         voxelMaterials.OrderByDescending(m => m.depth);
         voxelMaterials.RemoveAll(m => m.materialType == MaterialType.Ignored);
         InitializeLayers(grid, voxelMaterials);
-
-        if (keepItSimple)
-            return;
-        
-        /* 
-         * The first step in the process is to erode material from the static
-            stratified layers. The amount of material that is set loose is pro-
-            portional to the thickness parameter defined by the user for the
-            material. This means that this method will alter the surface terrain
-            by changing the highest parts of the material stacks into eroded
-            material and moving them if necessary.
-
-            After materials are set loose, they are ordered based on their
-            weight parameter. The heaviest materials are transferred to the
-            bottom of the stack. This is done because the simulation of multiple
-            granular materials blending and interacting is extremely challeng-
-            ing, so ordering and separating them simplifies the algorithm by
-            allowing the use of a single angle of repose for each material while
-            still producing satisfactory results. If there are multiple layers of
-            the same material, these are merged together.
-         */
 
         List<TerrainLayer>[,] layerRepresentation = CreateLayerRepresentations(grid);
         for (int iteration = 0; iteration < iterations; iteration++)
@@ -236,12 +215,13 @@ public class ErosionAgent : TerrainAgent
             TerrainLayer layer = fromLayers[i];
             yTop += layer.amount;
             layer.topY = yTop;
-            fromLayers[i] = layer;
+            layerRepresentation[xFrom, zFrom][i] = layer;
         }
         yTop = 0;
-        for (int i = 0; i < layerRepresentation[xTo, zTo].Count; i++)
+        List<TerrainLayer> toLayers = layerRepresentation[xTo, zTo];
+        for (int i = 0; i < toLayers.Count; i++)
         {
-            TerrainLayer layer = layerRepresentation[xTo, zTo][i];
+            TerrainLayer layer = toLayers[i];
             yTop += layer.amount;
             layer.topY = yTop;
             layerRepresentation[xTo, zTo][i] = layer;
