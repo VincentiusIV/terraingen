@@ -52,7 +52,10 @@ public class CoastlineAgent : TerrainAgent
         {
             if (grid.GetCell(cell) != 0 && grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight) 
             {
-                grid.SetCell(cell, type);
+                for(int y = 0; y  < cell.y; y++)
+                {
+                    grid.SetCell(cell.x, y, cell.z, type);
+                }
             }
         }
         pos = NextPosition(pos, grid);

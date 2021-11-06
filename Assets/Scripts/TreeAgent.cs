@@ -37,7 +37,7 @@ public class TreeAgent : TerrainAgent
                             tree.transform.Rotate(-90f, Random.Range(0, 360f), 0f, Space.Self);
                         }
                     }
-                    if (grid.GetDepth(position.x, position.y, position.z) == 0 && grid.GetCell(position.x, position.y, position.z) == 2 && grid.GetMaxSlope(position, 3) < 7)
+                    if (grid.GetDepth(position.x, position.y, position.z) == 1 && grid.GetCell(position.x, position.y, position.z) == 2 && grid.GetMaxSlope(position, 3) < 7)
                     {
                         if (Random.Range(0f, 1f) < rockSpawnChance)
                         {
