@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TerrainLayer
+public struct TerrainLayer
 {
     public int materialIndex;
     public float topY;
@@ -28,7 +28,6 @@ public class ErosionAgent : TerrainAgent
     public float falloff;
     public int iterations = 3;
     public float c = 0.1f;
-    public bool keepItSimple = true;
 
     public override void UpdateGrid(VoxelGrid grid)
     {

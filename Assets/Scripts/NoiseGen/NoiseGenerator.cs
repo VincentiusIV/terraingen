@@ -12,10 +12,19 @@ public class NoiseGenerator : MonoBehaviour
     public float falloff;
     public int SquareSmoothRange = 5;
     public bool autoUpdate;
+    public bool fixedOffset;
+
+    public Vector2 randomOffsetRange = new Vector2(1000f, 1000f);
 
     public float[,] Generate()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistance, lacunarity, falloff, new Vector2(transform.position.x, transform.position.z), SquareSmoothRange);
+        Vector2 offset = new Vector2(Random.Range(-randomOffsetRange.x, randomOffsetRange.x), Random.Range(-randomOffsetRange.y, randomOffsetRange.y));
+        if(fixedOffset)
+        {
+            offset.x = transform.position.x;
+            offset.y = transform.position.z;
+        }
+        float[,] noiseMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistance, lacunarity, falloff, offset, SquareSmoothRange);
         if (!Application.isPlaying)
         {
             NoiseDisplay display = FindObjectOfType<NoiseDisplay>();
