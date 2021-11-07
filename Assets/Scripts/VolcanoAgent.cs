@@ -18,10 +18,11 @@ public class VolcanoAgent : TerrainAgent
     {
         int volcanoCount = Random.Range(minVolcano, maxVolcano);
         Debug.LogFormat("Generating {0} volcanoes...", volcanoCount);
+        Volcanos.Clear();
         for (int i = 0; i < volcanoCount; i++)
         {
             Vector3 volcanoPos = new Vector3(Random.Range(0f, grid.Width - 1), 0f, Random.Range(0f, grid.Depth - 1));
-            float volcanoFloorHeight = grid.GetHeight(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) + Random.Range(minFloor, maxFloor);
+            float volcanoFloorHeight = grid.GetDepth(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) + Random.Range(minFloor, maxFloor);
             float radius = Random.Range(minRadius, maxRadius);
 
             Volcanos.Add((volcanoPos, radius));
@@ -47,6 +48,7 @@ public class VolcanoAgent : TerrainAgent
                     layerRepresentation[x, z] = layers;
                 }
             }
+            ErosionAgent.SortLayers(ref layerRepresentation, terrainData);
             ErosionAgent.LayersToVoxels(layerRepresentation, grid);
         }
     }

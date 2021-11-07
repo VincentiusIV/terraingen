@@ -7,7 +7,6 @@ using UnityEngine;
 /// </summary>
 public class GrassAgent : TerrainAgent
 {
-    public TerrainData terrainData;
     public int dirtType = 3;
     public int grasType = 2;
     private int seaLevel => terrainData.seaLevel;

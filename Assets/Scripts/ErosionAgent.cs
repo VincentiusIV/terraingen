@@ -19,9 +19,7 @@ public struct TerrainLayer
 }
 
 public class ErosionAgent : TerrainAgent
-{
-    public TerrainData terrainData;
-    
+{    
     public float noiseScale;
     public int octaves;
     public float persistance;
@@ -131,7 +129,7 @@ public class ErosionAgent : TerrainAgent
         {
             for (int z = 0; z < layerRepresentation.GetLength(1); z++)
             {
-                layerRepresentation[x, z].OrderBy(l => terrainData.GetMaterial(l.materialIndex).depth);
+                layerRepresentation[x, z].OrderBy(l => terrainData.GetMaterial(l.materialIndex).weight);
             }
         }
     }
@@ -185,6 +183,7 @@ public class ErosionAgent : TerrainAgent
             
             if (fromLayer.materialIndex == materialIndex)
             {
+                amount = Mathf.Min(fromLayer.amount, amount);
                 fromLayer.amount -= amount;
                 fromLayer.amount = Mathf.Max(0, fromLayer.amount);
                 layerRepresentation[xFrom, zFrom][i] = fromLayer;

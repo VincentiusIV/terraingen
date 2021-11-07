@@ -8,6 +8,7 @@ public class TerrainPipeline : MonoBehaviour
     public VoxelGrid Grid { get; private set; }
     public TerrainAgent[] agents;
 
+    public TerrainData terrainData;
     public int size = 10000;
     public int maxHeight = 10;
 
@@ -26,11 +27,12 @@ public class TerrainPipeline : MonoBehaviour
         Grid = new VoxelGrid(size, maxHeight);
         foreach (var agent in agents)
         {
+            agent.terrainData = terrainData;
+
             agentWatch.Start();
             UnityEngine.Debug.LogFormat("Agent active: {0}", agent.GetType().ToString());
             agent.UpdateGrid(Grid);
             Grid.UpdateDepthsAndHeights();
-
             agentWatch.Stop();
             PrintTimeStamp(agentWatch, agent.GetType().ToString());
             agentWatch.Reset();
