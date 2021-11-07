@@ -14,27 +14,23 @@ public class CoastlineAgent : TerrainAgent
     public int itterationDepth = 6;
     public float maxSlope = 1.5f;
     public int slopeRange = 3;
+    public int sandTypeDistVolcano = 20;
     private HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
     private int MaxTries = 25;
+    private List<(Vector3, float)> volcanoPositions;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        VolcanoAgent volcanoAgent = GameObject.Find("VolcanoAgent").GetComponent<VolcanoAgent>();
+        volcanoPositions = volcanoAgent.GetPositions(); 
         int tokens = (int)(grid.Width * tokenScalar);
         for (int token = 0; token < tokens; token++)
         {
-            Vector3Int randomPos = new Vector3Int(Random.Range(0,grid.Width), Random.Range(minBeachHeight, maxBeachHeight), Random.Range(0, grid.Depth));
-            if(nearCoast(randomPos, grid) && !visited.Contains(randomPos))
+            Vector3Int randomPos = new Vector3Int(Random.Range(0, grid.Width), Random.Range(minBeachHeight, maxBeachHeight), Random.Range(0, grid.Depth));
+            if (nearCoast(randomPos, grid) && !visited.Contains(randomPos))
             {
-                float selector = Random.Range(0,3);
-                int beachType;
-                if(selector < 1)
-                {
-                    beachType = 5;
-                }
-                else
-                {
-                    beachType = 4;
-                }
+                float selector = Random.Range(0, 3);
+                int beachType = 4;
                 visited.Add(randomPos);
                 DrawBeach(randomPos, grid, itterationDepth, beachType);
             }
@@ -43,27 +39,34 @@ public class CoastlineAgent : TerrainAgent
 
     private VoxelGrid DrawBeach(Vector3Int pos, VoxelGrid grid, int depth, int type)
     {
-        if(depth < 1)
+        if (depth < 1)
         {
             return grid;
         }
         foreach (var cell in Brush(pos, grid))
         {
-            if (grid.GetCell(cell) != 0 && grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight) 
+            if (grid.GetCell(cell) != 0 && grid.GetMaxSlope(cell, slopeRange) < maxSlope && cell.y < maxBeachHeight)
             {
-                for(int y = 0; y  <= cell.y; y++)
+                for (int y = 0; y <= cell.y; y++)
                 {
-                    grid.SetCell(cell.x, y, cell.z, type);
+                    if (DistToVolcano(pos) < sandTypeDistVolcano)
+                    {
+                        grid.SetCell(cell.x, y, cell.z, 5);
+                    }
+                    else
+                    {
+                        grid.SetCell(cell.x, y, cell.z, 4);
+                    }
                 }
             }
         }
         pos = NextPosition(pos, grid);
-        if(pos.x == -1) //No location was found when trying... stop
+        if (pos.x == -1) //No location was found when trying... stop
         {
             return grid;
         }
         Debug.Log("Found adjacent");
-        grid = DrawBeach(pos, grid, depth-1, type);
+        grid = DrawBeach(pos, grid, depth - 1, type);
         return grid;
     }
 
@@ -78,7 +81,7 @@ public class CoastlineAgent : TerrainAgent
             checking.x = pos.x + (int)Random.Range(-searchRadius / 2, searchRadius / 2);
             checking.z = pos.z + (int)Random.Range(-searchRadius / 2, searchRadius / 2);
             tries++;
-            if(tries > MaxTries)
+            if (tries > MaxTries)
             {
                 return new Vector3Int(-1, -1, -1);
             }
@@ -98,7 +101,7 @@ public class CoastlineAgent : TerrainAgent
             {
                 if (z > itt && z < (searchRadius - itt - 1))
                 {
-                    int depth = grid.GetDepth(pos.x + x, pos.y, pos.z + (z - (int)(searchRadius / 2))) -1;
+                    int depth = grid.GetDepth(pos.x + x, pos.y, pos.z + (z - (int)(searchRadius / 2))) - 1;
                     cells.Add(new Vector3Int(pos.x + x, pos.y + depth, pos.z + (z - (int)(searchRadius / 2))));
                 }
             }
@@ -127,7 +130,7 @@ public class CoastlineAgent : TerrainAgent
         {
             for (int z = (int)(-searchRadius / 2); z < (int)(searchRadius / 2) + 1; z++)
             {
-                if(grid.GetCell(pos.x + x , pos.y, pos.z + z) == 0 && !foundEmpty && grid.InBounds(pos.x + x, pos.y, pos.z + z))
+                if (grid.GetCell(pos.x + x, pos.y, pos.z + z) == 0 && !foundEmpty && grid.InBounds(pos.x + x, pos.y, pos.z + z))
                 {
                     foundEmpty = true;
                 }
@@ -135,12 +138,42 @@ public class CoastlineAgent : TerrainAgent
                 {
                     foundFilled = true;
                 }
-                if(foundFilled && foundEmpty)
+                if (foundFilled && foundEmpty)
                 {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private float DistToVolcano(Vector3Int pos)
+    {
+        if (volcanoPositions.Count != 0)
+        {
+            float distance = float.MaxValue;
+            foreach (var volcano in volcanoPositions)
+            {
+                Vector3 volcPos = volcano.Item1;
+                float radius = volcano.Item2;
+
+                float xSq = Mathf.Pow(Mathf.Abs(pos.x - volcPos.x), 2);
+                float ySq = Mathf.Pow(Mathf.Abs(pos.y - volcPos.y), 2);
+                float zSq = Mathf.Pow(Mathf.Abs(pos.z - volcPos.z), 2);
+
+                float currentDist = Mathf.Sqrt(xSq + ySq + zSq);
+                if (currentDist < distance)
+                {
+                    distance = currentDist;
+                }
+                distance = distance - radius;
+            }
+            return distance;
+        }
+        else
+        {
+            return float.MaxValue;
+        }
+
     }
 }

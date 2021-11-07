@@ -5,7 +5,7 @@ using UnityEngine;
 public class VolcanoAgent : TerrainAgent
 {
     // volcano pos, radius
-    public static List<(Vector3, float)> Volcanos = new List<(Vector3, float)>();
+    private static List<(Vector3, float)> Volcanos = new List<(Vector3, float)>();
 
     public int minVolcano = 1, maxVolcano = 1;
     public float minRadius = 10f, maxRadius = 100f;
@@ -93,5 +93,10 @@ public class VolcanoAgent : TerrainAgent
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(volcano.Item1, volcano.Item2);
         }
+    }
+
+    public List<(Vector3, float)> GetPositions()
+    {
+        return Volcanos;
     }
 }
