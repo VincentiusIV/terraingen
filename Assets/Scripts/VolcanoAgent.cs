@@ -13,6 +13,7 @@ public class VolcanoAgent : TerrainAgent
     public float rimSteepness = 0.42f;
     public int minFloor = 1, maxFloor = 10;
     public AnimationCurve volcanoBlend;
+    public int volcanoPositionIterations = 100;
 
     public override void UpdateGrid(VoxelGrid grid)
     {
@@ -21,7 +22,7 @@ public class VolcanoAgent : TerrainAgent
         Volcanos.Clear();
         for (int i = 0; i < volcanoCount; i++)
         {
-            Vector3 volcanoPos = new Vector3(Random.Range(0f, grid.Width - 1), 0f, Random.Range(0f, grid.Depth - 1));
+            Vector3 volcanoPos = ChooseVolcanoPosition(grid);
             float volcanoFloorHeight = grid.GetDepth(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) + Random.Range(minFloor, maxFloor);
             float radius = Random.Range(minRadius, maxRadius);
 
@@ -33,7 +34,7 @@ public class VolcanoAgent : TerrainAgent
                 for (int z = 0; z < grid.Depth; z++)
                 {
                     List<TerrainLayer> layers = layerRepresentation[x, z];
-                    Vector3 cell = new Vector3(x , 0f, z);
+                    Vector3 cell = new Vector3(x, 0f, z);
                     float distanceFromCenter = (cell - volcanoPos).magnitude;
                     float volcanoX = distanceFromCenter / radius;
                     float volcanoShape = Volcano(volcanoX, rimWidth, rimSteepness, -100);
@@ -51,6 +52,22 @@ public class VolcanoAgent : TerrainAgent
             ErosionAgent.SortLayers(ref layerRepresentation, terrainData);
             ErosionAgent.LayersToVoxels(layerRepresentation, grid);
         }
+    }
+
+    private Vector3 ChooseVolcanoPosition(VoxelGrid grid)
+    {
+        Vector3 best = new Vector3(Random.Range(0f, grid.Width - 1), 0f, Random.Range(0f, grid.Depth - 1));
+        for (int i = 0; i < volcanoPositionIterations; i++)
+        {
+            Vector3Int newPos = new Vector3Int(Random.Range(0, grid.Width), 0, Random.Range(0, grid.Depth));
+            float surfaceHeight = grid.GetDepth(newPos.x, newPos.y, newPos.z);
+            if(surfaceHeight > best.y)
+            {
+                best = newPos;
+                best.y = surfaceHeight;
+            }
+        }
+        return best; 
     }
 
     float Cavity(float x)
