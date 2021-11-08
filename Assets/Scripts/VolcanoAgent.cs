@@ -17,6 +17,7 @@ public class VolcanoAgent : TerrainAgent
     public override void UpdateGrid(VoxelGrid grid)
     {
         Debug.LogFormat("VulcAgent says : {0} -- {1}", maxVolcano, Loader.volcs);
+        maxVolcano = Loader.volcs;
         if (maxVolcano != 0)
         {
             int volcanoCount = Random.Range(minVolcano, maxVolcano);

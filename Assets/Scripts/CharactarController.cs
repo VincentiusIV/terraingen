@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharactarController : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class CharactarController : MonoBehaviour
         if (Input.GetKeyDown("escape"))
         {
             Cursor.lockState = CursorLockMode.None;
+            SceneManager.LoadScene(0);
         }
     }
 }
