@@ -8,11 +8,11 @@ public class CaveGenAgent : TerrainAgent
 {
 
     public int tokens = 100;
-    public int maxCaves = 20;
+    public int maxCaves = Loader.caves;
     private int generatedCaves = 0;
     public override void UpdateGrid(VoxelGrid grid)
     {
-        Debug.Log("CaveAgent working...");
+        maxCaves = Loader.caves;
         for (int i = 0; i < tokens; i++)
         {
             if (generatedCaves < maxCaves)

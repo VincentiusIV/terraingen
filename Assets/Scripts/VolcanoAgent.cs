@@ -6,8 +6,7 @@ public class VolcanoAgent : TerrainAgent
 {
     // volcano pos, radius
     private static List<(Vector3, float)> Volcanos = new List<(Vector3, float)>();
-
-    public int minVolcano = 1, maxVolcano = 1;
+    public int minVolcano = 0, maxVolcano = Loader.volcs;
     public float minRadius = 10f, maxRadius = 100f;
     public float rimWidth = 0.7f;
     public float rimSteepness = 0.42f;
@@ -17,40 +16,44 @@ public class VolcanoAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
-        int volcanoCount = Random.Range(minVolcano, maxVolcano);
-        Debug.LogFormat("Generating {0} volcanoes...", volcanoCount);
-        Volcanos.Clear();
-        for (int i = 0; i < volcanoCount; i++)
+        Debug.LogFormat("VulcAgent says : {0} -- {1}", maxVolcano, Loader.volcs);
+        if (maxVolcano != 0)
         {
-            Vector3 volcanoPos = ChooseVolcanoPosition(grid);
-            float volcanoFloorHeight = grid.GetDepth(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) + Random.Range(minFloor, maxFloor);
-            float radius = Random.Range(minRadius, maxRadius);
-
-            Volcanos.Add((volcanoPos, radius));
-
-            List<TerrainLayer>[,] layerRepresentation = ErosionAgent.CreateLayerRepresentations(grid);
-            for (int x = 0; x < grid.Width; x++)
+            int volcanoCount = Random.Range(minVolcano, maxVolcano);
+            Debug.LogFormat("Generating {0} volcanoes...", volcanoCount);
+            Volcanos.Clear();
+            for (int i = 0; i < volcanoCount; i++)
             {
-                for (int z = 0; z < grid.Depth; z++)
+                Vector3 volcanoPos = ChooseVolcanoPosition(grid);
+                float volcanoFloorHeight = grid.GetDepth(Mathf.RoundToInt(volcanoPos.x), 0, Mathf.RoundToInt(volcanoPos.z)) + Random.Range(minFloor, maxFloor);
+                float radius = Random.Range(minRadius, maxRadius);
+
+                Volcanos.Add((volcanoPos, radius));
+
+                List<TerrainLayer>[,] layerRepresentation = ErosionAgent.CreateLayerRepresentations(grid);
+                for (int x = 0; x < grid.Width; x++)
                 {
-                    List<TerrainLayer> layers = layerRepresentation[x, z];
-                    Vector3 cell = new Vector3(x, 0f, z);
-                    float distanceFromCenter = (cell - volcanoPos).magnitude;
-                    float volcanoX = distanceFromCenter / radius;
-                    float volcanoShape = Volcano(volcanoX, rimWidth, rimSteepness, -100);
-                    for (int j = 0; j < layers.Count; j++)
+                    for (int z = 0; z < grid.Depth; z++)
                     {
-                        TerrainLayer layer = layers[j];
-                        float prevAmount = layer.amount;
-                        float baseHeight = Mathf.Lerp(volcanoFloorHeight, prevAmount, volcanoBlend.Evaluate(volcanoX));
-                        layer.amount = baseHeight + (volcanoShape * radius / layers.Count);
-                        layers[j] = layer;
+                        List<TerrainLayer> layers = layerRepresentation[x, z];
+                        Vector3 cell = new Vector3(x, 0f, z);
+                        float distanceFromCenter = (cell - volcanoPos).magnitude;
+                        float volcanoX = distanceFromCenter / radius;
+                        float volcanoShape = Volcano(volcanoX, rimWidth, rimSteepness, -100);
+                        for (int j = 0; j < layers.Count; j++)
+                        {
+                            TerrainLayer layer = layers[j];
+                            float prevAmount = layer.amount;
+                            float baseHeight = Mathf.Lerp(volcanoFloorHeight, prevAmount, volcanoBlend.Evaluate(volcanoX));
+                            layer.amount = baseHeight + (volcanoShape * radius / layers.Count);
+                            layers[j] = layer;
+                        }
+                        layerRepresentation[x, z] = layers;
                     }
-                    layerRepresentation[x, z] = layers;
                 }
+                ErosionAgent.SortLayers(ref layerRepresentation, terrainData);
+                ErosionAgent.LayersToVoxels(layerRepresentation, grid);
             }
-            ErosionAgent.SortLayers(ref layerRepresentation, terrainData);
-            ErosionAgent.LayersToVoxels(layerRepresentation, grid);
         }
     }
 

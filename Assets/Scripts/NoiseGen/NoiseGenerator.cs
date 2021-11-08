@@ -14,7 +14,7 @@ public class NoiseGenerator : MonoBehaviour
     public bool autoUpdate;
     public bool useFixedOffset;
     public Vector2 fixedOffset;
-    public Vector2 randomOffsetRange = new Vector2(1000f, 1000f);
+    public Vector2 randomOffsetRange = new Vector2(Loader.noiseOffset, Loader.noiseOffset);
 
     public float[,] Generate()
     {

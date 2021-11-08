@@ -2,24 +2,25 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
-
+using UnityEngine.UI;
 public class TerrainPipeline : MonoBehaviour
 {
     public VoxelGrid Grid { get; private set; }
     public TerrainAgent[] agents;
 
     public TerrainData terrainData;
-    public int size = 10000;
-    public int maxHeight = 10;
+    public int size = Loader.size;
+    public int maxHeight = Loader.height;
 
-    private void Awake()
-    {
+    private void Awake() {
+        size = Loader.size;
         GenerateTerrain();
     }
 
     [ContextMenu("Run")]
     public void GenerateTerrain()
     {
+        UnityEngine.Debug.LogFormat("{0} - {1} - {2} - {3} - {4} ", Loader.size, Loader.height, Loader.noiseOffset, Loader.volcs, Loader.caves);
         UnityEngine.Debug.Log("Running the terrain pipeline...");
         Stopwatch totalWatch = new Stopwatch();
         totalWatch.Start();
