@@ -100,9 +100,9 @@ public static class Noise
                     amplitude *= persistence;
                     frequency *= lacunarity;
                 }
+
                 maxNoiseHeight = Mathf.Max(maxNoiseHeight, noiseHeight);
                 minNoiseHeight = Mathf.Min(minNoiseHeight, noiseHeight);
-
                 float distToCenter = Mathf.Sqrt((Mathf.Pow(Mathf.Abs(x - (width / 2)), 2) + Mathf.Pow(Mathf.Abs(y - (height / 2)), 2))) + Random.Range(-0.9f, 1.1f) + noiseHeight;
                 distToCenter = NormalizeDist(distToCenter, width, height);
                 //Debug.Log(string.Format("Dist To Center {0}", distToCenter));
@@ -131,9 +131,6 @@ public static class Noise
         }
        // Debug.Log(string.Format("{0} --- {1}", minNoiseHeight, maxNoiseHeight));
         noiseMap = SmoothNoise(SquareSmoothRange, noiseMap, width, height, maxNoiseHeight);
-        Debug.Log(noiseMap[50, 50]);
-        Debug.Log(noiseMap[0, 0]);
-        Debug.Log(maxNoiseHeight);
         return noiseMap;
     }
 

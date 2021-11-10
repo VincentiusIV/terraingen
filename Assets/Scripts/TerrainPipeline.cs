@@ -9,18 +9,21 @@ public class TerrainPipeline : MonoBehaviour
     public TerrainAgent[] agents;
 
     public TerrainData terrainData;
-    public int size = Loader.size;
-    public int maxHeight = Loader.height;
+    public int size = 100;
+    public int maxHeight = 100;
 
     private void Awake() {
-        size = Loader.size;
         GenerateTerrain();
     }
 
     [ContextMenu("Run")]
     public void GenerateTerrain()
     {
-        UnityEngine.Debug.LogFormat("{0} - {1} - {2} - {3} - {4} ", Loader.size, Loader.height, Loader.noiseOffset, Loader.volcs, Loader.caves);
+        if(Application.isPlaying)
+        {
+            size = Loader.size;
+        }
+        UnityEngine.Debug.LogFormat("{0} - {1}", size, maxHeight);
         UnityEngine.Debug.Log("Running the terrain pipeline...");
         Stopwatch totalWatch = new Stopwatch();
         totalWatch.Start();

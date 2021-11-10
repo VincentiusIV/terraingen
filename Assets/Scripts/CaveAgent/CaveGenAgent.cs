@@ -12,7 +12,8 @@ public class CaveGenAgent : TerrainAgent
     private int generatedCaves = 0;
     public override void UpdateGrid(VoxelGrid grid)
     {
-        maxCaves = Loader.caves;
+        if(Application.isPlaying)
+            maxCaves = Loader.caves;
         for (int i = 0; i < tokens; i++)
         {
             if (generatedCaves < maxCaves)

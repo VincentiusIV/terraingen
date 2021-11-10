@@ -18,9 +18,10 @@ public class NoiseGenerator : MonoBehaviour
 
     public float[,] Generate()
     {
-        if(Loader.noiseOffset != 0)
+        if(Application.isPlaying)
         {
-            randomOffsetRange = new Vector2(Loader.noiseOffset, Loader.noiseOffset);
+            useFixedOffset = (Loader.noiseOffset != Vector2.zero);
+            fixedOffset = Loader.noiseOffset;
         }
         if (Loader.noiseP != 0) persistance = Loader.noiseP;
         if (Loader.noiseL != 0) lacunarity = Loader.noiseL;
@@ -31,11 +32,8 @@ public class NoiseGenerator : MonoBehaviour
         }
         Debug.LogFormat("Noise offset: ({0},{1})", offset.x, offset.y);
         float[,] noiseMap = Noise.GenerateNoiseMap(width, height, noiseScale, octaves, persistance, lacunarity, falloff, offset, SquareSmoothRange);
-        if (!Application.isPlaying)
-        {
-            NoiseDisplay display = FindObjectOfType<NoiseDisplay>();
-            display.drawNoiseMap(noiseMap);
-        }
+        NoiseDisplay display = FindObjectOfType<NoiseDisplay>();
+        display.drawNoiseMap(noiseMap);
         return noiseMap;
     }
 }

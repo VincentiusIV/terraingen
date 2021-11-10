@@ -15,10 +15,11 @@ public class Loader : MonoBehaviour
     public Text volcText;
     public Text caveText;
     public Text heightText;
-    public Text noiseText;
+    public Text noiseTextX, noiseTextY;
     public Text noiseScaleText;
     public Text BeachColor, VolcSize, TreeSpawn, RockSpawn, NoiseP, NoiseL;
-    public static int volcs, size, caves, height, noiseOffset, beachColor, volcSize, treeSpawn, rockSpawn;
+    public static int volcs, size, caves, height, beachColor, volcSize, treeSpawn, rockSpawn;
+    public static Vector2 noiseOffset;
     public static float noiseP, noiseL, noiseScale;
     private float time = 120f;
     
@@ -26,12 +27,24 @@ public class Loader : MonoBehaviour
     {
         slider.value = 0f;
         Debug.LogFormat("Size: {0} -- Height: {3} -- Noise Offset: {4} -- volcanos: {1} -- caves: {2}", size, volcs, caves, height, noiseOffset);
-        StartCoroutine(LoadAsync(index));
-        
+        StartCoroutine(LoadAsync(index));        
     }
 
     IEnumerator LoadAsync (int index)
     {
+        SetSize();
+        SetVolcs();
+        SetCaves();
+        SetHeight();
+        SetNoiseOffsetX();
+        SetNoiseOffsetY();
+        SetNoiseScale();
+        SetBC();
+        SetVolcSize();
+        SetTreeSpawn();
+        SetRockSpawn();
+        SetNoiseP();
+        SetNoiseL();
 
         AsyncOperation operation = SceneManager.LoadSceneAsync(index);
         LoadingBG.SetActive(true);
@@ -64,10 +77,15 @@ public class Loader : MonoBehaviour
         string text = heightText.text.ToString();
         int.TryParse(text, out Loader.height);
     }
-    public void SetNoiseOffset()
+    public void SetNoiseOffsetX()
     {
-        string text = noiseText.text.ToString();
-        int.TryParse(text, out Loader.noiseOffset);
+        string text = noiseTextX.text.ToString();
+        float.TryParse(text, out Loader.noiseOffset.x);
+    }
+    public void SetNoiseOffsetY()
+    {
+        string text = noiseTextY.text.ToString();
+        float.TryParse(text, out Loader.noiseOffset.y);
     }
     public void SetNoiseScale()
     {
