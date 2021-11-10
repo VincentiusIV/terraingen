@@ -6,7 +6,7 @@ public class VolcanoAgent : TerrainAgent
 {
     // volcano pos, radius
     private static List<(Vector3, float)> Volcanos = new List<(Vector3, float)>();
-    public int minVolcano = 0, maxVolcano = Loader.volcs;
+    public int minVolcano = 0, maxVolcano = 6;
     public float minRadius = 10f, maxRadius = 100f;
     public float rimWidth = 0.7f;
     public float rimSteepness = 0.42f;
@@ -17,7 +17,11 @@ public class VolcanoAgent : TerrainAgent
     public override void UpdateGrid(VoxelGrid grid)
     {
         Debug.LogFormat("VulcAgent says : {0} -- {1}", maxVolcano, Loader.volcs);
-        maxVolcano = Loader.volcs;
+        if(Loader.volcs != 0)
+        {
+            maxVolcano = Loader.volcs;
+        }
+        if (Loader.volcSize != 0) maxRadius = Loader.volcSize;
         if (maxVolcano != 0)
         {
             int volcanoCount = Random.Range(minVolcano, maxVolcano);

@@ -12,6 +12,7 @@ public class TreeAgent : TerrainAgent
     public float rockSpawnChance = 1 / 25f;
     public float maxTreeSlope = 2f;
     public float minDistFromVolcano = 5;
+    
 
     public GameObject[] trees;
     public GameObject[] rocks;
@@ -20,6 +21,14 @@ public class TreeAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        if(Loader.treeSpawn != 0)
+        {
+            treeSpawnChance = Loader.treeSpawn / 100;
+        }
+        if (Loader.rockSpawn != 0)
+        {
+            rockSpawnChance = Loader.rockSpawn / 100;
+        }
         VolcanoAgent volcanoAgent = GameObject.Find("VolcanoAgent").GetComponent<VolcanoAgent>();
         volcanoPositions = volcanoAgent.GetPositions();
         Trees = GameObject.Find("Trees").GetComponent<Transform>();

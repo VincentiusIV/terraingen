@@ -21,6 +21,7 @@ public class CoastlineAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        if (Loader.beachColor != 0) sandTypeDistVolcano = Loader.beachColor;
         VolcanoAgent volcanoAgent = GameObject.Find("VolcanoAgent").GetComponent<VolcanoAgent>();
         volcanoPositions = volcanoAgent.GetPositions(); 
         int tokens = (int)(grid.Width * tokenScalar);

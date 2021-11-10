@@ -60,7 +60,7 @@ public class CaveGenAgent : TerrainAgent
 
     private string GenerateAxiom(int length, bool allowSplit)
     {
-        int axiomLength = Random.Range(4, length);
+        int axiomLength = Random.Range(length-5, length);
         string axiom = "";
         for (int i = 0; i < axiomLength; i++)
         {

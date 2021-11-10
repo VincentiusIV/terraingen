@@ -14,10 +14,16 @@ public class NoiseGenerator : MonoBehaviour
     public bool autoUpdate;
     public bool useFixedOffset;
     public Vector2 fixedOffset;
-    public Vector2 randomOffsetRange = new Vector2(Loader.noiseOffset, Loader.noiseOffset);
+    public Vector2 randomOffsetRange;
 
     public float[,] Generate()
     {
+        if(Loader.noiseOffset != 0)
+        {
+            randomOffsetRange = new Vector2(Loader.noiseOffset, Loader.noiseOffset);
+        }
+        if (Loader.noiseP != 0) persistance = Loader.noiseP;
+        if (Loader.noiseL != 0) lacunarity = Loader.noiseL;
         Vector2 offset = new Vector2(Random.Range(-randomOffsetRange.x, randomOffsetRange.x), Random.Range(-randomOffsetRange.y, randomOffsetRange.y));
         if(useFixedOffset)
         {

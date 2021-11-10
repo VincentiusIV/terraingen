@@ -12,6 +12,7 @@ public class HeightMapAgent : TerrainAgent
 
     public override void UpdateGrid(VoxelGrid grid)
     {
+        amplitude = Loader.height * 0.8f;
         Debug.Log("HeightMapAgent working...");
         InitializeGridFromNoiseMap(grid);
     }

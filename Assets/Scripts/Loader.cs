@@ -7,6 +7,7 @@ public class Loader : MonoBehaviour
 {
 
     public GameObject LoadingBG;
+    public GameObject advancedSettings, settings;
     public Slider slider;
     public Text ProgressText;
     // Start is called before the first frame update
@@ -15,8 +16,12 @@ public class Loader : MonoBehaviour
     public Text caveText;
     public Text heightText;
     public Text noiseText;
-    public static int volcs, size, caves, height, noiseOffset;
+    public Text noiseScaleText;
+    public Text BeachColor, VolcSize, TreeSpawn, RockSpawn, NoiseP, NoiseL;
+    public static int volcs, size, caves, height, noiseOffset, beachColor, volcSize, treeSpawn, rockSpawn;
+    public static float noiseP, noiseL, noiseScale;
     private float time = 120f;
+    
     public void Load(int index)
     {
         slider.value = 0f;
@@ -64,5 +69,46 @@ public class Loader : MonoBehaviour
         string text = noiseText.text.ToString();
         int.TryParse(text, out Loader.noiseOffset);
     }
+    public void SetNoiseScale()
+    {
+        string text = noiseScaleText.text.ToString();
+        float.TryParse(text, out Loader.noiseScale);
+    }
+    public void SetBC()
+    {
+        string text = BeachColor.text.ToString();
+        int.TryParse(text, out Loader.beachColor);
+    }
+    public void SetVolcSize()
+    {
+        string text = VolcSize.text.ToString();
+        int.TryParse(text, out Loader.volcSize);
+    }
+    public void SetTreeSpawn()
+    {
+        string text = TreeSpawn.text.ToString();
+        int.TryParse(text, out Loader.treeSpawn);
+    }
+    public void SetRockSpawn()
+    {
+        string text = RockSpawn.text.ToString();
+        int.TryParse(text, out Loader.rockSpawn);
+    }
+    public void SetNoiseP()
+    {
+        string text = NoiseP.text.ToString();
+        float.TryParse(text, out Loader.noiseP);
+    }
+    public void SetNoiseL()
+    {
+        string text = NoiseL.text.ToString();
+        float.TryParse(text, out Loader.noiseL);
+    }
 
+
+    public void ToggleAdvanced()
+    {
+        advancedSettings.SetActive(!advancedSettings.activeSelf);
+        settings.SetActive(!settings.activeSelf);
+    }
 }
